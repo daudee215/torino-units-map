@@ -2,6 +2,8 @@
 
 Updated: 22 October 2026 (Europe/Berlin).
 
+Public v1: https://daudee215.github.io/torino-units-map/ — verified in Chrome. Baseline tag: `v1.0.0`. See `RELEASES.md` for deployment evidence. The six v2 priorities are tracked at https://github.com/daudee215/torino-units-map/milestone/1 (issues #1–#6); they remain open. Next implementation milestone: repeatable public apartment-source acquisition plus persistent, evidence-backed property relationships. Current code does not yet implement the full six-point v2 programme.
+
 ## Read this first
 
 This is a working, static GIS/energy prototype, not a finished apartment-level energy platform. The user explicitly considers the current result too basic. Preserve it as the version-one public baseline, then develop the six priorities in `V2_ROADMAP.md` as the next version.
