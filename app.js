@@ -2,7 +2,7 @@
 /* Unità San Donato: Leaflet + canvas. One renderer per pane, created once. */
 
 const $ = (id) => document.getElementById(id);
-const fmt = (v, d = 0) => (v == null || Number.isNaN(+v)) ? "–" : Number(v).toLocaleString("it-IT", { maximumFractionDigits: d, minimumFractionDigits: d });
+const fmt = (v, d = 0) => (v == null || Number.isNaN(+v)) ? "–" : Number(v).toLocaleString(document.documentElement.lang === "en" ? "en-GB" : "it-IT", { maximumFractionDigits: d, minimumFractionDigits: d });
 const norm = (s) => (s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9/ ]/g, " ").replace(/\s+/g, " ").trim();
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
@@ -206,6 +206,7 @@ let panel = "dettagli";
 function openPanel(name, toggle) {
   const p = $("panel");
   if (toggle && panel === name && !p.hidden) { p.hidden = true; markActions(null); setTimeout(() => map.invalidateSize(), 0); return; }
+  if(panel !== name) p.querySelector(".panel-body").scrollTop = 0;
   panel = name; p.hidden = false;
   document.querySelectorAll("[data-view]").forEach((v) => { v.hidden = v.dataset.view !== name; });
   $("panelTitle").textContent = TITLES[name];
@@ -246,6 +247,7 @@ function selectLot(fp, entId, opts = {}) {
   const e = entId && entById.get(entId);
   if (e) G.sel.addLayer(L.circleMarker(e.layer.getLatLng(), { pane: "sel", renderer: R.sel, radius: 9, weight: 2.5, color: C["--halo"], fill: false, interactive: false }));
   renderDetails(o, entId);
+  document.dispatchEvent(new CustomEvent("lotselected", { detail: { fp, entId } }));
   if (opts.fit) map.fitBounds(o.layer.getBounds(), { maxZoom: 19.5, padding: [40, 40] });
   try { history.replaceState(null, "", "#lotto-" + fp.replace("/", "-")); } catch (_) { /* file:// */ }
   if (opts.open !== false) openPanel("dettagli");
@@ -338,7 +340,12 @@ function pick(i) {
   res.hidden = true;
   if (h.fp) { qEl.value = h.label; selectLot(h.fp, null, { fit: true }); return; }
   qEl.value = h.ent.p.indirizzo;
-  map.setView(h.ent.layer.getLatLng(), 19.5); selectLot(h.ent.p.fp, h.ent.id);
+  map.setView(h.ent.layer.getLatLng(), 19.5);
+  if(lotByFp.has(h.ent.p.fp)) selectLot(h.ent.p.fp, h.ent.id);
+  else {
+    showRawFeature(h.ent.p, typeof tr === "function" ? tr("Ingresso senza lotto", "Entrance without parcel") : "Ingresso senza lotto");
+    if(typeof openStreet === "function") openStreet(h.ent);
+  }
 }
 qEl.addEventListener("input", doSearch);
 qEl.addEventListener("focus", () => { if (hitList.length) res.hidden = false; });
@@ -471,7 +478,7 @@ function applyArea(latlngs) {
 /* ---------- exports ---------- */
 function csvCell(v) {
   if (v == null) return "";
-  const s = String(v);
+  const s = String(v).replace(/^[=+@\t\r]/, "'$&");
   return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 function toCSV(objs, cols) { return "﻿" + [cols.join(",")].concat(objs.map((o) => cols.map((c) => csvCell(o[c])).join(","))).join("\r\n"); }
@@ -479,9 +486,9 @@ function fc(list, extra) {
   return JSON.stringify({ type: "FeatureCollection", crs: { type: "name", properties: { name: "urn:ogc:def:crs:OGC:1.3:CRS84" } },
     features: list.map((o) => { const g = o.layer.toGeoJSON(7); g.properties = Object.assign({}, o.p, extra ? extra(o) : {}); return g; }) });
 }
-const LOT_COLS = ["ref", "foglio", "particella", "foglio_particella", "area_m2", "n_edifici", "n_ingressi", "livelli_max", "sul_res_m2", "famiglie_stimate", "uso_prevalente", "epoca", "affidabilita", "civici", "lon", "lat"];
-const BLD_COLS = ["bld_id", "CAT_USO", "NUM_PIANI", "livelli", "ALT_EDIFIC", "EPOCA_COST", "VAL_STORIC", "impronta_m2", "sul_res_m2", "famiglie_stimate", "n_ingressi", "foglio", "particella", "SEZCENS", "affidabilita", "lon", "lat"];
-const ENT_COLS = ["COD_CIVICO", "VIA", "CIVICO", "indirizzo", "CAP", "CIRCOSCRIZIONE", "fp", "match_lotto", "bld_id", "famiglie_per_ingresso", "lon", "lat"];
+const LOT_COLS = ["ref", "foglio", "particella", "foglio_particella", "area_m2", "n_edifici", "n_ingressi", "livelli_max", "sul_res_m2", "famiglie_stimate", "uso_prevalente", "epoca", "affidabilita", "dwellings_2023", "households_2023", "census_status", "civici", "lon", "lat"];
+const BLD_COLS = ["bld_id", "CAT_USO", "NUM_PIANI", "livelli", "ALT_EDIFIC", "EPOCA_COST", "VAL_STORIC", "impronta_m2", "sul_res_m2", "famiglie_stimate", "n_ingressi", "foglio", "particella", "SEZCENS", "affidabilita", "dwellings_2023", "households_2023", "census_status", "census_section_2021", "lon", "lat"];
+const ENT_COLS = ["COD_CIVICO", "VIA", "CIVICO", "indirizzo", "CAP", "CIRCOSCRIZIONE", "fp", "match_lotto", "bld_id", "famiglie_per_ingresso", "grid_areas_2025", "lon", "lat"];
 const ll6 = (ll) => ({ lon: +ll.lng.toFixed(7), lat: +ll.lat.toFixed(7) });
 const README = (n) => `Unità San Donato · esportazione ${new Date().toLocaleString("it-IT")}
 
@@ -517,6 +524,14 @@ async function exportSet(name, set, areaPoly) {
     zip.file("unita_pod_modello.csv", toCSV(pod, ["indirizzo", "cod_civico", "foglio", "particella", "famiglie_stimate_ingresso", "subalterno", "interno", "piano", "categoria", "pod", "fonte"]));
     if (areaPoly) zip.file("area_selezione.geojson", JSON.stringify(areaPoly));
     zip.file("LEGGIMI.txt", README(!!areaPoly));
+    if(typeof W !== "undefined" && W.ready) {
+      const selectedParcels = new Set(set.lots.map(o => o.p.foglio_particella));
+      const selectedBuildings = new Set(set.bld.map(o => String(o.p.bld_id)));
+      zip.file("census2023_source.json", JSON.stringify({reference_year:2023, geometry_year:2021, source:W.census.source, buildings:Object.fromEntries(Object.entries(W.census.buildings).filter(([id])=>selectedBuildings.has(id))),limitations:W.census.limitations},null,2));
+      zip.file("inspected_ape_records.json", JSON.stringify({...W.apes,certificates:W.apes.certificates.filter(c=>selectedParcels.has(c.parcel))},null,2));
+      zip.file("energy_source_benchmarks.json", JSON.stringify({arera:W.benchmark,pvgis:W.solar,kind:"public_benchmarks_not_measured_apartment_energy"},null,2));
+      zip.file("ENERGY_NOTES.txt", "Census dwelling counts are allocated estimates, not identified apartments. APE coverage is partial and APE values describe standardized use, not billed consumption. No interior apartment geometry or PODs are available. Multi-subalterno certificate totals must not be duplicated.\n");
+    }
     const blob = await zip.generateAsync({ type: "blob", compression: "DEFLATE", compressionOptions: { level: 6 } });
     saveBlob(blob, name + ".zip");
     toast(`Scaricato ${name}.zip (${fmt(blob.size / 1e6, 1)} MB)`);
@@ -531,7 +546,7 @@ function saveBlob(blob, filename) {
   setTimeout(() => URL.revokeObjectURL(url), 4000);
 }
 $("dlFull").onclick = () => {
-  const a = document.createElement("a"); a.href = "data/download/torino_sandonato_dati.zip"; a.download = "torino_sandonato_dati.zip";
+  const a = document.createElement("a"); a.href = "data/download/torino_sandonato_energy.zip"; a.download = "torino_sandonato_energy.zip";
   document.body.appendChild(a); a.click(); a.remove();
 };
 $("dlAllGeo").onclick = () => exportSet("torino_sandonato_tutti_i_livelli", { lots: LOTS, bld: BLD, ents: ENTS });
@@ -579,7 +594,7 @@ renderLegend();
       LOTS.push(o); lotByFp.set(p.foglio_particella, o); G.lots.addLayer(layer);
     });
     syncLayers();
-    $("loading").hidden = true;
+    $("loading").textContent = "Caricamento edifici e ingressi…";
     // label anchors after first paint
     setTimeout(() => { for (const o of LOTS) { try { o.c = o.layer.getCenter(); } catch (_) { o.c = o.layer.getBounds().getCenter(); } } refreshLabels(); renderPrio(); }, 0);
 
@@ -599,12 +614,19 @@ renderLegend();
       const layer = L.circleMarker(pointLL(ingressi.g[i]), { pane: "ent", renderer: R.ent, ...entStyle() });
       layer.bindTooltip(esc(p.indirizzo), { direction: "top", offset: [0, -6] });
       const ok = p.fp && lotByFp.has(p.fp);
-      layer.on("click", (e) => { if (drawing) return; L.DomEvent.stopPropagation(e); if (ok) selectLot(p.fp, id); });
+      layer.on("click", (e) => {
+        if (drawing) return; L.DomEvent.stopPropagation(e);
+        if (ok) selectLot(p.fp, id);
+        else if(typeof showRawFeature === "function") { showRawFeature(p, tr("Ingresso senza lotto", "Entrance without parcel")); openStreet(entById.get(id)); }
+      });
       const o = { id, p, layer }; ENTS.push(o); entById.set(id, o); G.ent.addLayer(layer);
-      if (ok) { if (!entsByFp.has(p.fp)) entsByFp.set(p.fp, []); entsByFp.get(p.fp).push(o); IDX.push({ o, k: norm(p.indirizzo) }); }
+      IDX.push({ o, k: norm(p.indirizzo) });
+      if (ok) { if (!entsByFp.has(p.fp)) entsByFp.set(p.fp, []); entsByFp.get(p.fp).push(o); }
     });
     syncLayers();
     fillStats();
+    $("loading").hidden = true;
+    document.dispatchEvent(new Event("projectready"));
 
     const h = location.hash.match(/^#lotto-(\d+)-(\w+)$/);
     const start = h ? null : IDX.find((x) => x.k === norm("Via Felice Cordero Di Pamparato 17"));
