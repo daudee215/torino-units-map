@@ -72,9 +72,9 @@ In `scripts/`, da eseguire in ordine:
 3. `build_web.py` genera i file in `data/`.
 
 Requisiti: Python 3.11 o successivo, geopandas, shapely, pyproj, lxml.
+
 # Public website and continuation
 
 Public atlas: https://daudee215.github.io/torino-units-map/
 
 Start the next chat with `HANDOFF.md`, then read `DATA_REVIEW.md`, `V2_ROADMAP.md` and `RELEASES.md`. Version one is preserved before the six-point version-two programme. GitHub Pages deploys only the explicit allowlist in `scripts/build_public_site.py`; raw evidence, generated output and future company measurements are excluded.
-
