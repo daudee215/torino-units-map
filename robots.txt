@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://daudee215.github.io/torino-units-map/sitemap.xml

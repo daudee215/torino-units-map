@@ -2,6 +2,24 @@
 
 Mappa web dei lotti catastali di San Donato e Campidoglio (Torino) con edifici, numeri civici e famiglie stimate per lotto. Serve come base per collegare i subalterni delle visure catastali e i codici POD a ogni ingresso.
 
+## Energy workspace · 22 October 2026
+
+The local application now uses a white ArcGIS-style interface with persistent IT/EN controls. It includes:
+
+- An ISTAT 2023 dwelling-estimate map, based on spatial joins to official 2021 census polygons. Partial boundary sections remain unallocated.
+- Parcel, building, entrance and inspected APE attribute tables with search, numeric filtering, sorting, pagination and CSV export.
+- Automatic Google Street View in a resizable bottom-right window when an entrance is selected; close and minimize/restore controls stay inside the application.
+- Two inspected public APE records at civic number 17: residential subalterno 75 and one non-residential property referencing subalterni 8+9. This is a partial public-document sample, not a complete apartment inventory.
+- Electricity screening using the ARERA 2025 Piemonte resident 1.5–3 kW benchmark and four PVGIS 5.3 production scenarios. Unit/group PV shares are explicit, initially unassigned and saved locally in the browser.
+- A 3D scene using source building-height attributes, with 3 m/floor fallbacks marked orange. This is a LoD1-style flat-roof extrusion; no surveyed LoD2/2.5 roofs or apartment interiors are claimed.
+- A source/method view with coverage, limitations and downloads, plus an empty company-data contract for later actual consumption.
+
+See [DATA_REVIEW.md](DATA_REVIEW.md) for provenance and rejected interpretations, and [TODO.md](TODO.md) for the handoff queue. The pilot rectangle includes part of Campidoglio and is not an official San Donato neighbourhood boundary. Whole-Torino coverage is a future expansion, not already present in this checkout.
+
+All core map, geometry, ZIP and 3D libraries are pinned in `vendor/`. Google Street View, web fonts and optional external basemaps still require an internet connection. Run the source preparation scripts listed in `DATA_REVIEW.md` to regenerate reviewed additions. Check calculations with `node scripts/check-energy.cjs`.
+
+The updated download is `data/download/torino_sandonato_energy.zip`: a GeoPackage (EPSG:32632), six CSV tables, source benchmarks and the data review. The original baseline archive remains available under its original filename.
+
 ## Avvio in locale
 
 Serve un server HTTP, perché la pagina carica i dati da `data/`. Aprire `index.html` come file non funziona.
@@ -54,3 +72,9 @@ In `scripts/`, da eseguire in ordine:
 3. `build_web.py` genera i file in `data/`.
 
 Requisiti: Python 3.11 o successivo, geopandas, shapely, pyproj, lxml.
+# Public website and continuation
+
+Public atlas: https://daudee215.github.io/torino-units-map/
+
+Start the next chat with `HANDOFF.md`, then read `DATA_REVIEW.md`, `V2_ROADMAP.md` and `RELEASES.md`. Version one is preserved before the six-point version-two programme. GitHub Pages deploys only the explicit allowlist in `scripts/build_public_site.py`; raw evidence, generated output and future company measurements are excluded.
+
