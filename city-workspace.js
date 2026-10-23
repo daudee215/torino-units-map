@@ -21,7 +21,7 @@ window.CityWorkspace=(()=>{
    if(!state.center)cm.fitBounds([[summary.bounds[1],summary.bounds[0]],[summary.bounds[3],summary.bounds[2]]],{padding:[18,18],maxZoom:13});
    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxNativeZoom:16,maxZoom:21,attribution:'Basemap © Esri, HERE, OpenStreetMap'}).addTo(cm);
    L.geoJSON(summary.boundary,{style:{color:'#316e9c',weight:2,fill:false,interactive:false}}).addTo(cm);
-   const layers={parcel:L.geoJSON(null,{style:{color:'#55798d',weight:.7,fillColor:'#f6f9fa',fillOpacity:.35},onEachFeature:(f,l)=>l.on('click',()=>select(f.properties.id))}).addTo(cm),building:L.geoJSON(null,{style:{color:'#6f7780',weight:.6,fillColor:'#a7b2bb',fillOpacity:.35},onEachFeature:(f,l)=>l.on('click',()=>select(f.properties.id))}).addTo(cm),entrance:L.geoJSON(null,{pointToLayer:(f,ll)=>L.circleMarker(ll,{radius:4,color:'#fff',weight:1,fillColor:'#007ac2',fillOpacity:1}),onEachFeature:(f,l)=>l.on('click',()=>select(f.properties.id,true))}).addTo(cm)};
+   const layers={parcel:L.geoJSON(null,{style:{color:'#55798d',weight:.7,fillColor:'#f6f9fa',fillOpacity:.35},onEachFeature:(f,l)=>l.on('click',ev=>{if(ev.originalEvent)ev.originalEvent.cityFeatureHandled=true;select(f.properties.id);})}).addTo(cm),building:L.geoJSON(null,{style:{color:'#6f7780',weight:.6,fillColor:'#a7b2bb',fillOpacity:.35},onEachFeature:(f,l)=>l.on('click',ev=>{if(ev.originalEvent)ev.originalEvent.cityFeatureHandled=true;select(f.properties.id);})}).addTo(cm),entrance:L.geoJSON(null,{pointToLayer:(f,ll)=>L.circleMarker(ll,{radius:4,color:'#fff',weight:1,fillColor:'#007ac2',fillOpacity:1}),onEachFeature:(f,l)=>l.on('click',ev=>{if(ev.originalEvent)ev.originalEvent.cityFeatureHandled=true;select(f.properties.id,true);})}).addTo(cm)};
    cm.createPane('cityOverview').style.zIndex='390';
    // One canvas holds citywide outlines; avoid 82,434 Leaflet path objects.
    const ParcelOverview=L.Layer.extend({
@@ -63,7 +63,7 @@ window.CityWorkspace=(()=>{
    }
    cm.on('moveend',view);view();
    cm.on('click',ev=>{
-    if(cm.getZoom()>=16)return;
+    if(ev.originalEvent?.cityFeatureHandled||!cm.hasLayer(parcelGroup))return;
     const {lng,lat}=ev.latlng,point=turf.point([lng,lat]);
     const matches=overviewFeatures.filter(f=>{const b=f.properties.bbox;return b[0]<=lng&&b[2]>=lng&&b[1]<=lat&&b[3]>=lat&&turf.booleanPointInPolygon(point,f);});
     if(matches.length===1)select(matches[0].id);
