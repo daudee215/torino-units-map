@@ -1,5 +1,7 @@
 # Reviewed public-data integration — 22 October 2026
 
+**Address release review — 23 October 2026:** 2.1.0 includes curated municipal/ANNCSU/BDTRE address candidates per parcel, with provider attribution and CC BY 4.0 source references. ANNCSU data-use statement: https://www.anncsu.gov.it/it/consultazione-dellarchivio/ricerca-strade-e-numeri-civici/ . Publication is limited to source address/access fields and candidate evidence; no local reviews, raw downloads, new roof geometry or confirmed apartment access is inferred. See ADDRESS_REFINEMENT_PHASE.md.
+
 **Current focus — 23 October 2026:** property/subalterno identities and civic-entrance relationships, described in `PARCEL_DATA_PHASE.md`. No new authoritative identities are claimed by the dossier/filter changes. Proposed, accepted-in-review, rejected and out-of-validity relationships remain distinct; acceptance is not legal cadastral verification. Energy development is deferred.
 
 **Latest phase:** `PUBLIC_ENERGY_PHASE.md` documents the newly acquired ISTAT 2024 municipal electricity/PV workbook, five reconciled ARERA power cohorts and 936 hourly reference bins, plus four full 2023 PVGIS weather scenarios. Monthly comparisons are scenarios; hourly demand is shown separately because its population/time alignment differs. User-defined sensitivity bounds are not statistical confidence intervals. Company-data controls are removed from this phase.

@@ -26,7 +26,7 @@
     return data.properties.filter(p=>{
       const links=idx.active(idx.byProperty.get(p.id)||[]);
       if(entrance&&!links.some(e=>e.entranceId===String(entrance)))return false;
-      const hay=normalized([p.address,p.civic,p.floor,...p.members.map(m=>m.join("/"))].join(" "));
+      const hay=normalized([p.address,p.civic,p.floor,...(p.reported_interiors||[]),...p.members.map(m=>m.join("/"))].join(" "));
       if(q){
         const parts=q.split('/');
         const exactKey=parts.length>=3;
@@ -39,6 +39,8 @@
       if(kind==="reviewed")return links.some(e=>e.status==="accepted");
       if(kind==="grouped")return p.members.length>1||p.scope!=="cadastral_property";
       if(kind==="section_conflict")return p.flags.includes("cadastral_section_alias_requires_review");
+      if(kind==="has_interior")return (p.reported_interiors||[]).length>0;
+      if(kind==="interior_conflict")return p.flags.includes("conflicting_reported_interiors");
       return true;
     });
   }

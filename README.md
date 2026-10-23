@@ -1,5 +1,7 @@
 # Unità San Donato
 
+**Latest release 2.1.0 (23 October 2026):** address evidence now connects municipal civic numbers with ANNCSU and BDTRE access candidates in the online Property register. Reported interior observations retain their provenance. The register contains 25,433 certificate records and 23,522 property/group identities, not a complete apartment census. Source-only address comparisons are static; review decisions remain local. See `ADDRESS_REFINEMENT_PHASE.md` and `RELEASES.md`. Future development remains local until separately authorized. Earlier release notes below preserve history.
+
 **Public parcel-focused release `2.0.0` (authorized 23 October 2026):** [open the atlas](https://daudee215.github.io/torino-units-map/). The online property register is read-only and excludes local review notes, raw evidence and the ARPA sample geometry with unresolved reuse rights. Future development remains local until separately authorized. See `RELEASES.md` for deployment verification.
 
 **Current direction — 23 October 2026 (`2.0.0-dev.4`):** refined parcel and property evidence, prioritising subalterno identities and entrance links. Open **Property register / Registro immobili** for the new parcel dossier and entrance drill-down. Further energy work is deferred; the earlier energy sections below describe preserved historical work. Read `PARCEL_DATA_PHASE.md`. Everything remains local at `http://127.0.0.1:8765/`; no v2 publication is authorized.

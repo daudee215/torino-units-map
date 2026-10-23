@@ -22,6 +22,9 @@ def main():
     for cid,c in certs.items():
         assert c['property_id'] in properties
         assert cid in properties[c['property_id']]['certificates']
+        for observation in c.get('interior_observations',[]):
+            assert observation['source_field']=='interno' and observation['source_record_id']
+            assert observation['normalized'] is not None or observation['raw'] is None or isinstance(observation['raw'],str)
         if c['eligible_on_date']:
             assert c['active'] and c['submitted']<=summary['as_of']<=c['expires']
         for alias in c.get('source_aliases',[]):
@@ -33,6 +36,10 @@ def main():
             assert alias['submitted']==c['submitted']
             assert set(map(tuple,alias['members'])) & set(map(tuple,c['members']))
     grouped=certs['sipee:2025-200471-0025']
+    for p in properties.values():
+        values={o['normalized'] for o in p.get('interior_observations',[]) if o['normalized']}
+        assert set(p.get('reported_interiors',[]))==values
+        assert ('conflicting_reported_interiors' in p['flags'])==(len(values)>1)
     assert {m[4] for m in grouped['members']}=={'8','9'}
     assert grouped['standard_electricity_kwh_year']==2206.42
     assert len([c for c in certs.values() if c.get('standard_electricity_kwh_year')==2206.42])==1

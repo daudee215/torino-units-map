@@ -17,7 +17,7 @@ import unicodedata
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data/registry"
 DB = ROOT / "output/registry/properties.sqlite"
-TODAY = date(2026, 10, 22).isoformat()
+TODAY = date(2026, 10, 23).isoformat()
 PORTAL = "https://energia-energiapt.piemontetu.it/fra-ept/ape"
 CATALOG = "https://www.dati.gov.it/view-dataset/dataset_id/dettaglio-attestato-di-prestazione-energetica-ape-sezione-dati-generali"
 
@@ -35,6 +35,18 @@ def floor_key(value):
     s=str(value if value is not None else '').strip().upper()
     if re.fullmatch(r'[+-]?\d+(?:[.,]\d+)?',s):return str(Decimal(s.replace(',','.')).normalize())
     return re.sub(r'\s+','',s)
+
+
+def interior(value):
+    raw = str(value if value is not None else '').strip()
+    value = re.sub(r'\s+', ' ', raw.upper())
+    # Punctuation, zero and descriptors are retained without claiming a unit label.
+    placeholder=not re.search(r'[A-Z0-9]',value) or value in {'0','N.D.','ND','N/A','NA','SNC','NON INDICATO'}
+    descriptor=bool(re.search(r'\b(SCALA|CORTILE|TUTTI|ALL|SUB)\b',value)) or value in {'BIS','TER'}
+    candidate=bool(re.fullmatch(r'(?:\d{1,4}[A-Z]?|[A-Z]\d{0,3}|\d{1,4}[/ -][A-Z0-9]{1,4})',value))
+    kind='placeholder' if placeholder else 'descriptor' if descriptor else 'identifier_candidate' if candidate else 'needs_review'
+    return dict(raw=raw or None, normalized=value if kind=='identifier_candidate' else None,
+                kind=kind,source_field='interno', source=CATALOG)
 
 
 def numeric(value):
@@ -79,11 +91,12 @@ def build():
     certificates, aliases, audit = {}, {}, Counter()
     source_runs, street_aliases, unmatched = [], {}, {}
     acquisition_paths=sorted((ROOT / "_raw/ape/inventory").glob("street-*.json"))
+    acquisition_paths+=sorted((ROOT / "_raw/ape/inventory").glob("parcel-*.json"))
     seed=ROOT / "_raw/ape/parcel-1175-434.json"
     if seed.exists():acquisition_paths.append(seed)
     for path in acquisition_paths:
         run = json.loads(path.read_text(encoding="utf-8"))
-        source_runs.append(dict(kind="street" if run.get("street") else "parcel",**{k:run.get(k) for k in ["street","status","retrieved","returned_records","complete_response","canonical_street"]}))
+        source_runs.append(dict(kind="street" if run.get("street") else "parcel",**{k:run.get(k) for k in ["street","parcel","status","retrieved","returned_records","complete_response","canonical_street"]}))
         if run.get("canonical_street"):
             street_aliases[text(run["street"])] = text(run["canonical_street"])
         for row in run.get("records", []):
@@ -158,6 +171,9 @@ def build():
                 floor=r.get("piano"), heated_area_m2=numeric(r.get("sup_riscaldata")),
                 residential=r.get("flg_residenziale") == "S", use=r.get("destinazione_uso"),
                 construction_year=r.get("anno_costruzione"), declared_building_units=r.get("nr_um"), energy_class=None)
+            record['interior_observations'] = [dict(interior(x.get('interno')), source_record_id=external,
+                submitted=record['submitted']) for x in rows]
+            record['interior_observations'] = list({packed(x):x for x in record['interior_observations']}.values())
             # Equal dates, floors and areas can belong to DIFFERENT certificates.
             # Corroborate the publisher's encoded certificate key as well as date and
             # at least one exact cadastral member. This also preserves additional
@@ -169,6 +185,7 @@ def build():
                         and set(map(tuple,certificates[cid]['members'])) & set(map(tuple,record['members']))]
             if len(candidates) == 1:
                 main = certificates[candidates[0]]
+                main.setdefault('interior_observations', []).extend(record['interior_observations'])
                 main.setdefault("source_aliases", []).append({"id":cid,"source":CATALOG,"method":"observed_encoded_certificate_key_plus_date_and_cadastral_member", "members":record['members'],"submitted":record['submitted'],"heated_area_m2":record['heated_area_m2'],"floor":record['floor'],"object_scope":scope,"declared_building_units":record.get('declared_building_units'),"active":record['active'],"expires":record['expires']})
                 if not main.get('inspected_pdf'):main["object_scope"] = scope
                 aliases[cid] = main["id"]
@@ -212,6 +229,11 @@ def build():
         preferred = sorted(eligible or [certificates[k] for k in p["certificates"]],key=lambda c:(c.get("submitted") or "",c["id"]),reverse=True)[0]
         p.update(latest_certificate=preferred["id"],eligible_certificates=len(eligible),residential=preferred.get("residential"),
                  address=preferred.get("address"),civic=preferred.get("civic"),floor=preferred.get("floor"),heated_area_m2=preferred.get("heated_area_m2"))
+        observations=[dict(o,certificate_id=cid) for cid in p['certificates'] for o in certificates[cid].get('interior_observations',[])]
+        p['interior_observations']=observations
+        p['reported_interiors']=sorted({o['normalized'] for o in observations if o['normalized']})
+        if len(p['reported_interiors'])>1:
+            p['flags'].append('conflicting_reported_interiors')
         if len(eligible)>1:
             p["flags"].append("multiple_eligible_certificates_review_renewals")
         if any(len(membership_index[packed(m)])>1 for m in p["members"]):
@@ -310,12 +332,15 @@ def build():
     assert db.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
     assert not db.execute("PRAGMA foreign_key_check").fetchall()
     db.close()
-    summary=dict(version="2.0.0-dev.2",as_of=TODAY,built=datetime.now(timezone.utc).isoformat(),
+    summary=dict(version="2.1.0-dev.1",as_of=TODAY,built=datetime.now(timezone.utc).isoformat(),
         counts=dict(parcels=len(graph),parcels_with_evidence=sum(bool(g["properties"]) for g in graph.values()),
             properties=len(properties),identity_complete_properties=sum(p["identity_complete"] for p in properties.values()),
             certificates=len(certificates),eligible_certificates=sum(c["eligible_on_date"] for c in certificates.values()),
             properties_with_flags=sum(bool(p["flags"]) for p in properties.values()),
-            street_queries=sum(r['kind']=="street" for r in source_runs),street_queries_capped=sum(r["status"] == "possible_truncation" for r in source_runs)),
+            street_queries=sum(r['kind']=="street" for r in source_runs),street_queries_capped=sum(r['kind']=='street' and r["status"] == "possible_truncation" for r in source_runs),
+            targeted_parcel_queries=sum(r['kind']=='parcel' and r.get('parcel') is not None for r in source_runs),
+            properties_with_reported_interior=sum(bool(p['reported_interiors']) for p in properties.values()),
+            properties_with_interior_conflict=sum('conflicting_reported_interiors' in p['flags'] for p in properties.values())),
         bulk_source=bulk_source,source_runs=source_runs,audit=dict(audit),
         limitations=["Source coverage is not a complete apartment census.","Blank cadastral sections are preserved, not guessed.",
             "Candidate entrance/building relationships require review.","Certificates and overlapping cadastral sets are not apartment counts.",
