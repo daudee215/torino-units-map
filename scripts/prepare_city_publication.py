@@ -30,7 +30,7 @@ def prepare():
   target=OUT/name;target.parent.mkdir(exist_ok=True,parents=True);target.write_bytes(data)
   assert len(data)<25*1024**2,'Unexpected oversized static shard'
   manifest.append(dict(path=name,bytes=len(data),sha256=hashlib.sha256(data).hexdigest()))
- summary=json.loads(db.execute("SELECT value FROM metadata WHERE key='summary'").fetchone()[0]);summary.update(version='2.5.0',local_only=False,public_source_only=True)
+ summary=json.loads(db.execute("SELECT value FROM metadata WHERE key='summary'").fetchone()[0]);summary.update(version='2.5.1',local_only=False,public_source_only=True)
  summary['boundary']=json.loads((ROOT/'output/city/boundary.geojson').read_text(encoding='utf-8'))
  records=defaultdict(dict);briefs=defaultdict(list);postings=defaultdict(lambda:defaultdict(list));members=defaultdict(dict);ranges={};count=0
  def add(rid,kind,title,description,detail):
@@ -82,12 +82,14 @@ def prepare():
   write('workbench/search.json.gz',brief_rows)
   for fp,detail in pilot.execute('SELECT parcel,detail FROM parcels'):contexts[fp.split('/')[0]][fp]=json.loads(detail)
   for sheet,rows in contexts.items():write('workbench/parcels/'+sheet+'.json.gz',rows)
-  psummary=json.loads(pilot.execute("SELECT value FROM metadata WHERE key='summary'").fetchone()[0]);psummary.update(version='2.5.0',local_only=False,public_source_only=True)
+  psummary=json.loads(pilot.execute("SELECT value FROM metadata WHERE key='summary'").fetchone()[0]);psummary.update(version='2.5.1',local_only=False,public_source_only=True)
   write('workbench/summary.json.gz',psummary)
  summary['static']=dict(record_count=count,ranges=ranges,brief_size=1000,tile_step=step,tile_count=tile_count,record_hash_prefix=3,search_prefixes=sorted(bytes.fromhex(p['path'].split('/')[1].split('.')[0]).decode() for p in manifest if p['path'].startswith('search/')),search_normalization='lowercase, NFD accents removed, Unicode alphanumeric token prefixes',gzip=True)
+ from prepare_city_overview import overview
+ overview(write,summary)
  write('summary.json',summary)
  size=sum(r['bytes'] for r in manifest);assert size<650*1024**2,'City publication exceeds reviewed 650 MiB city budget'
- (OUT/'manifest.json').write_bytes(encode(dict(version='2.5.0',public_source_only=True,bytes=size,records=count,files=manifest)))
+ (OUT/'manifest.json').write_bytes(encode(dict(version='2.5.1',public_source_only=True,bytes=size,records=count,files=manifest)))
  allowed={r['path'] for r in manifest}|{'manifest.json'}
  actual={p.relative_to(OUT).as_posix() for p in OUT.rglob('*') if p.is_file()}
  assert actual==allowed,'Unexpected or stale city publication files'

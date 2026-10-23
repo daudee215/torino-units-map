@@ -1,3 +1,7 @@
+**Current correction — 23 October 2026:** version `2.5.1` fixes saved `#lotto-…` links opening the San Donato pilot and adds all 82,434 parcel outlines at city overview zoom, with North/South controls. Read `WHOLE_TORINO_PHASE.md`. This is a correction to the user-authorized published citywide release; unrelated future work remains local.
+
+**Documentation follow-up verified:** public commit `b02841ed112b9c69be96fa12ed11e30d13a2dd66` records the 2.5.0 verification; workflow https://github.com/daudee215/torino-units-map/actions/runs/39996282571 also succeeded. Runtime/data remain the verified 2.5.0 release. Clean release checkout is at that commit; subsequent development remains local.
+
 **Published and verified — 23 October 2026:** whole-Torino release **2.5.0** is live at https://daudee215.github.io/torino-units-map/ . Runtime commit `418e59a1250af0f56ae55bcadfae59902ba208d0`; successful build/deploy: https://github.com/daudee215/torino-units-map/actions/runs/39995396107 . Citywide geometry/search and the read-only 24,884-record pilot workbench are online. Raw archives, local databases/reviews and excluded ARPA geometry are not published. Source counts are not verified apartment counts; legal entrances remain unverified. Further development returns to local-only until separately authorized.
 
 ## 2.5.0 deployment verification — 23 October 2026

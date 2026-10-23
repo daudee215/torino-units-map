@@ -1,7 +1,7 @@
 /* Public-data energy workspace. Base GIS remains in app.js. */
 "use strict";
 const W = {
-  lang: "en", tab: (!location.hash||new URLSearchParams(location.search).has("city"))?"city":"map", ready: false, census: null, solar: null, benchmark: null,
+  lang: "en", tab: new URLSearchParams(location.search).get("view")==="pilot"?"map":"city", ready: false, census: null, solar: null, benchmark: null,
   apes: null, grid: null, orientation: "south", scope: "lot", page: 0, sort: "id", direction: 1,
   tableLayer: "lots", tableText: "", tableView: false, tableField: "", tableMin: "",
   assumptions: { ...EnergyModel.defaults }, streetId: null, scene: null, pvShares: {},
@@ -18,6 +18,7 @@ const footer = document.createElement("footer"); footer.className = "statusbar";
 const pageEl = document.createElement("main"); pageEl.className = "workspace-page"; pageEl.hidden = true;
 const street = document.createElement("section"); street.id = "streetWindow"; street.className = "street-window"; street.hidden = true; street.setAttribute("aria-label", "Street View");
 appEl.insertBefore(nav, document.querySelector(".shell")); appEl.append(pageEl, footer);
+if(W.tab==="city"){document.querySelector(".shell").hidden=true;pageEl.hidden=false;pageEl.innerHTML=`<div class="empty">${tr("Caricamento di tutta Torino…","Loading whole Torino…")}</div>`;}
 document.querySelector(".mapwrap").append(street);
 const mapTitle = document.createElement("div"); mapTitle.className = "map-heading card";
 const mapTools = document.createElement("div"); mapTools.className = "map-tools";

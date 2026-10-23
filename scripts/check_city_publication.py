@@ -12,13 +12,13 @@ def clean(value):
 def read(p):return json.loads(gzip.decompress(p.read_bytes()) if p.suffix=='.gz' else p.read_bytes())
 def check(root):
  folder=root/'data/city';manifest=read(folder/'manifest.json');summary=read(folder/'summary.json')
- assert manifest['version']==summary['version']=='2.5.0'
+ assert manifest['version']==summary['version']=='2.5.1'
  assert manifest['public_source_only'] and summary['public_source_only'] and summary['local_only'] is False
  assert summary['counts']['property_source_identities']==226951 and summary['counts']['parcel']==82434
  assert summary['static']['record_count']==491895 and len(summary['static']['search_prefixes'])>50
  allowed=set();paths=[]
  for r in manifest['files']:
-  name=r['path'];assert re.fullmatch(r'(?:summary\.json|(?:records/[0-9a-f]{3}|briefs/\d+|search/[0-9a-f]+|members/\d+|tiles/\d+_\d+|workbench/records/[0-9a-f]{2}|workbench/parcels/\d+|workbench/search|workbench/summary)\.json\.gz)',name),name
+  name=r['path'];assert re.fullmatch(r'(?:summary\.json|(?:records/[0-9a-f]{3}|briefs/\d+|search/[0-9a-f]+|members/\d+|tiles/\d+_\d+|overview/\d+_\d+|workbench/records/[0-9a-f]{2}|workbench/parcels/\d+|workbench/search|workbench/summary)\.json\.gz)',name),name
   assert name not in allowed;allowed.add(name)
   p=folder/name;assert p.is_file() and not p.is_symlink();paths.append(p)
  assert allowed|{'manifest.json'}=={p.relative_to(folder).as_posix() for p in folder.rglob('*') if p.is_file()}
