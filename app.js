@@ -260,11 +260,11 @@ function chip(p) {
 }
 const entsOf = (fp) => (entsByFp.get(fp) || []).slice().sort((a, b) => a.p.indirizzo.localeCompare(b.p.indirizzo, "it", { numeric: true }));
 const sisterQuery = (p) => `Catasto Fabbricati · Torino (L219) · foglio ${p.foglio} · particella ${p.particella}`;
-function podRows(list) {
-  const head = ["indirizzo", "cod_civico", "foglio", "particella", "famiglie_stimate_ingresso", "subalterno", "interno", "piano", "categoria", "pod", "fonte"];
+function entranceEvidenceRows(list) {
+  const head = ["indirizzo", "cod_civico", "foglio", "particella", "famiglie_stimate_ingresso", "fonte"];
   return [head.join("\t")].concat(list.map((o) => {
     const [fg, pt] = (o.p.fp || "/").split("/");
-    return [o.p.indirizzo, o.p.COD_CIVICO, fg, pt, o.p.famiglie_per_ingresso ?? "", "", "", "", "", "", ""].join("\t");
+    return [o.p.indirizzo, o.p.COD_CIVICO, fg, pt, o.p.famiglie_per_ingresso ?? "", "GIS pubblico / public GIS"].join("\t");
   })).join("\n");
 }
 function renderDetails(o, entId) {
@@ -293,7 +293,7 @@ function renderDetails(o, entId) {
       <h3>Visura SISTER</h3>
       <div class="copyrow"><code>${esc(sisterQuery(p))}</code><button class="btn outline sm" type="button" id="cpSister">Copia</button></div>
       <div class="actions">
-        <button class="btn outline sm" type="button" id="cpPod" ${list.length ? "" : "disabled"}>Copia righe modulo POD</button>
+        <button class="btn outline sm" type="button" id="cpEvidence" ${list.length ? "" : "disabled"}>Copia evidenze ingressi</button>
         <button class="btn outline sm" type="button" id="cpLink">Copia link</button>
         <button class="btn outline sm" type="button" id="dlLot">Scarica lotto</button>
         <button class="btn ghost sm" type="button" id="zLot">Zoom al lotto</button>
@@ -304,7 +304,7 @@ function renderDetails(o, entId) {
     </div>
     ${list.length ? `<ul class="list" id="entList">${list.map((e) => `<li><button type="button" data-ent="${e.id}" class="${e.id === entId ? "on" : ""}"><span>${esc(e.p.indirizzo)}</span><small>${e.p.famiglie_per_ingresso == null ? "" : "≈ " + fmt(e.p.famiglie_per_ingresso, 1) + " fam."}</small></button></li>`).join("")}</ul>` : ""}`;
   $("cpSister").onclick = () => copy(sisterQuery(p), "Riferimento SISTER copiato");
-  if (list.length) $("cpPod").onclick = () => copy(podRows(list), `${list.length} righe copiate: incollale in Excel o Fogli`);
+  if (list.length) $("cpEvidence").onclick = () => copy(entranceEvidenceRows(list), `${list.length} righe copiate: incollale in Excel o Fogli`);
   $("cpLink").onclick = () => copy(location.href.split("#")[0] + "#lotto-" + p.foglio_particella.replace("/", "-"), "Link al lotto copiato");
   $("dlLot").onclick = () => exportSet(`lotto_${p.foglio_particella.replace("/", "_")}`, { lots: [o], bld: bldByFp.get(p.foglio_particella) || [], ents: list });
   $("zLot").onclick = () => map.fitBounds(o.layer.getBounds(), { maxZoom: 19.5, padding: [40, 40] });
@@ -466,11 +466,11 @@ function applyArea(latlngs) {
     <div class="block">
       <h3>Scarica la selezione</h3>
       <button class="btn wide" type="button" id="dlSel" ${lots.length ? "" : "disabled"}>Scarica ZIP (GeoJSON + CSV)</button>
-      <p class="hint">Lotti, edifici e ingressi in GeoJSON EPSG:4326, CSV degli stessi, modello unità/POD e il poligono di selezione.</p>
-      <button class="btn outline wide" type="button" id="cpSelPod" ${ents.length ? "" : "disabled"}>Copia righe modulo POD (${fmt(ents.length)})</button>
+      <p class="hint">Lotti, edifici e ingressi in GeoJSON EPSG:4326, CSV degli stessi, evidenze degli ingressi e il poligono di selezione.</p>
+      <button class="btn outline wide" type="button" id="cpSelEvidence" ${ents.length ? "" : "disabled"}>Copia evidenze ingressi (${fmt(ents.length)})</button>
     </div>`;
   $("dlSel").onclick = () => exportSet(`selezione_${new Date().toISOString().slice(0, 10)}`, areaSel, poly);
-  $("cpSelPod").onclick = () => copy(podRows(ents.slice().sort((a, b) => a.p.indirizzo.localeCompare(b.p.indirizzo, "it", { numeric: true }))), `${ents.length} righe copiate`);
+  $("cpSelEvidence").onclick = () => copy(entranceEvidenceRows(ents.slice().sort((a, b) => a.p.indirizzo.localeCompare(b.p.indirizzo, "it", { numeric: true }))), `${ents.length} righe copiate`);
   $("clearSel").disabled = false;
   openPanel("area");
 }
@@ -496,7 +496,6 @@ File
 - lotti.geojson / lotti.csv: lotti catastali (Agenzia delle Entrate, WFS INSPIRE) con sintesi di edifici, ingressi e famiglie stimate
 - edifici.geojson / edifici.csv: edifici principali della Carta Tecnica di Torino (traslati -1,1 m E, +1,0 m N per allinearli al catasto)
 - ingressi.geojson / ingressi.csv: numeri civici della Città di Torino con lotto ed edificio assegnati
-- unita_pod_modello.csv: una riga per ingresso, colonne vuote per subalterno, interno, piano, categoria e POD da compilare dalle visure
 ${n ? "- area_selezione.geojson: il poligono usato per la selezione\n" : ""}
 Sistema di riferimento: GeoJSON in WGS84 (EPSG:4326, ordine lon/lat). Nei CSV lon/lat sono il centroide (poligoni) o il punto.
 Precisione delle coordinate: 1e-6 gradi (circa 0,1 m).
@@ -517,11 +516,6 @@ async function exportSet(name, set, areaPoly) {
     zip.file("edifici.csv", toCSV(set.bld.map((o) => Object.assign({}, o.p, ll6(o.layer.getBounds().getCenter()))), BLD_COLS));
     zip.file("ingressi.geojson", fc(set.ents));
     zip.file("ingressi.csv", toCSV(set.ents.map((o) => Object.assign({}, o.p, ll6(o.layer.getLatLng()))), ENT_COLS));
-    const pod = set.ents.slice().sort((a, b) => a.p.indirizzo.localeCompare(b.p.indirizzo, "it", { numeric: true })).map((o) => {
-      const [fg, pt] = (o.p.fp || "/").split("/");
-      return { indirizzo: o.p.indirizzo, cod_civico: o.p.COD_CIVICO, foglio: fg, particella: pt, famiglie_stimate_ingresso: o.p.famiglie_per_ingresso, subalterno: "", interno: "", piano: "", categoria: "", pod: "", fonte: "" };
-    });
-    zip.file("unita_pod_modello.csv", toCSV(pod, ["indirizzo", "cod_civico", "foglio", "particella", "famiglie_stimate_ingresso", "subalterno", "interno", "piano", "categoria", "pod", "fonte"]));
     if (areaPoly) zip.file("area_selezione.geojson", JSON.stringify(areaPoly));
     zip.file("LEGGIMI.txt", README(!!areaPoly));
     if(typeof W !== "undefined" && W.ready) {

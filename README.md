@@ -1,6 +1,14 @@
 # Unità San Donato
 
-Mappa web dei lotti catastali di San Donato e Campidoglio (Torino) con edifici, numeri civici e famiglie stimate per lotto. Serve come base per collegare i subalterni delle visure catastali e i codici POD a ogni ingresso.
+**Public parcel-focused release `2.0.0` (authorized 23 October 2026):** [open the atlas](https://daudee215.github.io/torino-units-map/). The online property register is read-only and excludes local review notes, raw evidence and the ARPA sample geometry with unresolved reuse rights. Future development remains local until separately authorized. See `RELEASES.md` for deployment verification.
+
+**Current direction — 23 October 2026 (`2.0.0-dev.4`):** refined parcel and property evidence, prioritising subalterno identities and entrance links. Open **Property register / Registro immobili** for the new parcel dossier and entrance drill-down. Further energy work is deferred; the earlier energy sections below describe preserved historical work. Read `PARCEL_DATA_PHASE.md`. Everything remains local at `http://127.0.0.1:8765/`; no v2 publication is authorized.
+
+Mappa web dei lotti catastali di San Donato e Campidoglio (Torino) con edifici, numeri civici, evidenze immobiliari pubbliche e scenari di domanda elettrica e potenziale solare.
+
+## Latest local phase · 2.0.0-dev.3
+
+Open **Demand & solar / Domanda e solare** for parcel, building and property screening, explicit assumptions, monthly comparisons and CSV/JSON exports. Company-data integration is deferred and its active controls/templates have been removed. Start `serve-v2.bat`; use `http://127.0.0.1:8765/`. **Do not push or publish v2 yet.** Read `PUBLIC_ENERGY_PHASE.md` for newly processed ARERA/ISTAT/PVGIS sources, validation and limits. Actual LoD2/2.5 roofs and validated simultaneous hourly demand/generation remain unavailable.
 
 ## Energy workspace · 22 October 2026
 
@@ -12,7 +20,7 @@ The local application now uses a white ArcGIS-style interface with persistent IT
 - Two inspected public APE records at civic number 17: residential subalterno 75 and one non-residential property referencing subalterni 8+9. This is a partial public-document sample, not a complete apartment inventory.
 - Electricity screening using the ARERA 2025 Piemonte resident 1.5–3 kW benchmark and four PVGIS 5.3 production scenarios. Unit/group PV shares are explicit, initially unassigned and saved locally in the browser.
 - A 3D scene using source building-height attributes, with 3 m/floor fallbacks marked orange. This is a LoD1-style flat-roof extrusion; no surveyed LoD2/2.5 roofs or apartment interiors are claimed.
-- A source/method view with coverage, limitations and downloads, plus an empty company-data contract for later actual consumption.
+- A source/method view with coverage, limitations and public-evidence downloads.
 
 See [DATA_REVIEW.md](DATA_REVIEW.md) for provenance and rejected interpretations, and [TODO.md](TODO.md) for the handoff queue. The pilot rectangle includes part of Campidoglio and is not an official San Donato neighbourhood boundary. Whole-Torino coverage is a future expansion, not already present in this checkout.
 
@@ -38,7 +46,7 @@ Per pubblicarla su GitHub Pages basta attivare Pages sul branch principale, cart
 - Edifici principali della Carta Tecnica, ingressi civici (con lettere, scale e interni), sezioni di censimento.
 - Etichette di particelle (da zoom 18,5) e civici (da 19,5).
 - Ricerca per indirizzo o per foglio/particella (`1175/434`).
-- Scheda del lotto con riferimento SISTER da copiare, righe del modulo POD, link diretto (`#lotto-1175-434`) e download del lotto.
+- Scheda del lotto con riferimento SISTER da copiare, evidenze degli ingressi, link diretto (`#lotto-1175-434`) e download del lotto.
 - Selezione per poligono o per vista corrente, con riepilogo e download ZIP (GeoJSON e CSV).
 - Elenco dei lotti nella vista ordinati per famiglie stimate, per decidere le visure.
 - Mappe di base Esri (grigio chiaro, grigio scuro, ortofoto).
@@ -74,6 +82,8 @@ In `scripts/`, da eseguire in ordine:
 Requisiti: Python 3.11 o successivo, geopandas, shapely, pyproj, lxml.
 
 # Public website and continuation
+
+For the latest **local-only v2**, read [V2_PROGRESS.md](V2_PROGRESS.md). Double-click `serve-v2.bat`, then open the new **Property register / Registro immobili** tab. V2 must stay local until the user declares it finished. Roof evidence currently includes heights and a LiDAR coverage index, not verified LoD2 roofs.
 
 Public atlas: https://daudee215.github.io/torino-units-map/
 

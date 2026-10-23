@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="application-version" content="1.0.0">
+<meta name="application-version" content="2.0.0">
 <link rel="canonical" href="https://daudee215.github.io/torino-units-map/">
 <title>Unità San Donato · Torino</title>
 <meta name="description" content="Lotti catastali, edifici, ingressi civici e famiglie stimate per lotto a San Donato e Campidoglio, Torino.">
@@ -11,7 +11,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&family=Roboto+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="workspace.css">
+<link rel="stylesheet" href="workspace.css?v=2.0.0-dev.2">
+<link rel="stylesheet" href="registry.css?v=2.0.0">
+<link rel="stylesheet" href="public-energy.css?v=2.0.0">
 </head>
 <body>
 <div class="app">
@@ -126,7 +128,7 @@
             <button class="btn wide" type="button" id="dlFull">Pacchetto completo (GeoPackage + CSV)</button>
             <p class="hint">GeoPackage in EPSG:32632 con particelle, lotti di sintesi, edifici, ingressi e sezioni, più i CSV dei lotti, degli ingressi e delle visure da richiedere. File ZIP.</p>
             <button class="btn outline wide" type="button" id="dlAllGeo">Tutti i livelli in GeoJSON + CSV</button>
-            <p class="hint">GeoJSON in EPSG:4326 con modello unità/POD da compilare. File ZIP.</p>
+            <p class="hint">GeoJSON in EPSG:4326 con evidenze pubbliche di lotti, edifici e ingressi. File ZIP.</p>
           </div>
           <div class="block"><p class="notice" id="dlNote" hidden></p></div>
         </div>
@@ -167,8 +169,13 @@
 <script src="vendor/leaflet.js"></script>
 <script src="vendor/turf.min.js"></script>
 <script src="vendor/jszip.min.js"></script>
-<script src="app.js"></script>
+<script src="app.js?v=2.0.0"></script>
 <script src="energy-model.js"></script>
-<script src="workspace.js"></script>
+<script src="public-energy-model.js?v=2.0.0"></script>
+<script src="workspace.js?v=2.0.0"></script>
+<script src="identity-evidence.js?v=2.0.0"></script>
+<script src="parcel-identity.js?v=2.0.0"></script>
+<script src="registry-workspace.js?v=2.0.0"></script>
+<script src="public-energy-workspace.js?v=2.0.0"></script>
 </body>
 </html>

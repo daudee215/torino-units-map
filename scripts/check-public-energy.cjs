@@ -1,0 +1,51 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const {calculate}=require('../public-energy-model.js');
+const demand=require('../data/public_demand_profiles.json');
+const weather=require('../data/solar_weather_2023.json');
+const solar=require('../data/solar.json');
+const context=require('../data/torino_energy_context.json');
+const cohort=demand.cohorts.find(c=>c.power_class==='1.5<potenza_impegnata<=3');
+const months=solar.scenarios.south.monthly.map(m=>({month:m.month,kwh_per_kwp:m.E_m}));
+const base={households:1,roofM2:100,usableShare:.45,density:.2,demandSensitivity:.3,roofSensitivity:.15,pvShare:null};
+const property=calculate(base,cohort,months);
+assert.equal(property.annual.generation_kwh,null,'unassigned property PV stays unknown');
+assert.equal(property.annual.net_kwh,null);
+assert.equal(property.annual.generation_to_demand_ratio,null);
+assert.equal(property.capacity_kwp,9);
+assert.ok(Math.abs(property.annual.demand_kwh-1609.908)<1e-9);
+assert.equal(property.self_consumption_kwh,null);
+const allocated=calculate({...base,pvShare:.05},cohort,months);
+assert.ok(Math.abs(allocated.assigned_capacity_kwp-.45)<1e-10);
+assert.ok(Math.abs(allocated.annual.generation_kwh-allocated.monthly.reduce((s,m)=>s+m.generation_kwh,0))<1e-9);
+assert.ok(Math.abs(allocated.annual.net_kwh-(allocated.annual.generation_kwh-allocated.annual.demand_kwh))<1e-8);
+assert.ok(allocated.annual.ratio_low<=allocated.annual.generation_to_demand_ratio&&allocated.annual.ratio_high>=allocated.annual.generation_to_demand_ratio);
+const zero=calculate({...base,households:0,pvShare:0},cohort,months);
+assert.equal(zero.annual.demand_kwh,0);assert.equal(zero.annual.generation_kwh,0);assert.equal(zero.annual.generation_to_demand_ratio,null);
+assert.equal(calculate({...base,households:null,pvShare:1},cohort,months).annual.demand_kwh,null);
+assert.equal(calculate({...base,roofM2:null,pvShare:1},cohort,months).capacity_kwp,null);
+assert.equal(calculate({...base,demandSensitivity:1,pvShare:1},cohort,months).annual.ratio_high,null);
+assert.throws(()=>calculate({...base,pvShare:1.01},cohort,months));
+assert.throws(()=>calculate({...base,households:NaN},cohort,months));
+assert.throws(()=>calculate(base,cohort,months.slice(1)));
+assert.throws(()=>calculate(base,cohort,months.map(m=>({...m,month:1}))));
+for(const c of demand.cohorts){assert.equal(c.monthly.length,12);assert.ok(Math.abs(c.annual_kwh-c.annual_source)<1e-6);}
+assert.equal(demand.cohorts.length,5);assert.equal(demand.hourly_reference.length,936);
+assert.equal(new Set(demand.hourly_reference.map(r=>`${r.month}/${r.day_type}/${r.source_hour}`)).size,936);
+for(const [name,s] of Object.entries(weather.scenarios)){
+  const raw=JSON.parse(fs.readFileSync(`_raw/pvgis/hourly-2023-${name}.json`));
+  assert.equal(raw.outputs.hourly.length,8760);
+  const integrated=raw.outputs.hourly.reduce((sum,r)=>sum+r.P/1000,0);
+  assert.ok(Math.abs(integrated-s.annual_kwh_per_kwp)<1e-7);
+  assert.equal(s.monthly.length,12);
+  assert.equal(s.inputs.pv_module.peak_power,1);
+  assert.equal(s.inputs.pv_module.system_loss,14);
+}
+const latest=k=>context.metrics.find(m=>m.key===k).series.at(-1).value;
+assert.equal(latest('pv_installations'),2976);
+assert.ok(Math.abs(latest('pv_installed_capacity')-56.632861)<1e-6);
+assert.ok(latest('pv_self_consumed_generation')<=latest('pv_net_generation'));
+// The grouped inspection remains a single attestation; the new model never reads/splits its energy.
+const ape=require('../data/ape_units.json');assert.deepEqual(ape.certificates[1].subalterni,['8','9']);
+assert.equal(ape.certificates[0].standard_electricity_kwh_year,null);
+console.log('Public energy checks passed: monthly conservation, unknown/zero scopes, unassigned PV, sensitivity bounds, 5 cohorts, 936 profile bins and 4 × 8760 solar samples.');

@@ -1,5 +1,11 @@
 # Reviewed public-data integration — 22 October 2026
 
+**Current focus — 23 October 2026:** property/subalterno identities and civic-entrance relationships, described in `PARCEL_DATA_PHASE.md`. No new authoritative identities are claimed by the dossier/filter changes. Proposed, accepted-in-review, rejected and out-of-validity relationships remain distinct; acceptance is not legal cadastral verification. Energy development is deferred.
+
+**Latest phase:** `PUBLIC_ENERGY_PHASE.md` documents the newly acquired ISTAT 2024 municipal electricity/PV workbook, five reconciled ARERA power cohorts and 936 hourly reference bins, plus four full 2023 PVGIS weather scenarios. Monthly comparisons are scenarios; hourly demand is shown separately because its population/time alignment differs. User-defined sensitivity bounds are not statistical confidence intervals. Company-data controls are removed from this phase.
+
+**Local v2 addition:** see `V2_PROGRESS.md` for the 921,418-row regional APE acquisition, 196 live street queries, certificate-key reconciliation, cadastral-section review proposals, persisted local decisions, and roof-source checks. Current metadata registry contains 25,400 certificates and 23,501 property/group identities; these are not apartment counts. The original two inspected PDFs remain the only individually PDF-reviewed attestations. Eight national 1 m coverage-index tiles were found, but the raster download endpoint returned 404; no verified LoD2/2.5 dataset has been integrated.
+
 Publication note: attribution remains with each original provider; the project does not grant a blanket license over third-party data. The GSE public web-map item has an empty `licenseInfo` field (checked 22 October 2026); public query access is not an explicit open-data license. Its indicative pilot extract preserves source attribution. Verify further redistribution terms before expanded reuse. Consultation PDFs and certifier contact details are excluded from publication.
 
 This is a San Donato / Campidoglio rectangle pilot, not an official neighbourhood boundary or a complete Torino inventory. Research used the Chrome extension and original institutional pages. Raw source files are retained in `_raw/`, which is ignored by Git.

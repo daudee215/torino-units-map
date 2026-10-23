@@ -1,5 +1,9 @@
 # Version two — six agreed priorities
 
+**Latest scope override — 23 October 2026:** refined parcel/property data comes first, specifically **property/subalterno identity and entrance links**, as selected by the user. `PARCEL_DATA_PHASE.md` is the current plan. Defer further energy development and company integration. Prioritise exact identity keys, capped-query coverage, civic-letter matching and source-backed relationship review. All work remains local.
+
+**Current scope override — 22 October 2026:** the user now asks to focus on the four public-data steps described in `PUBLIC_ENERGY_PHASE.md`: joined property view, demand estimates, roof solar screening, annual/monthly comparisons. Company/meter integration is deferred; do not implement it in this phase. The original priorities below preserve context. The public-data screening workspace is implemented locally in `2.0.0-dev.3`; verified roofs and aligned hourly simultaneity remain unresolved.
+
 The user approved these priorities after reviewing version one and calling it too basic. Preserve the public version-one baseline, then implement this roadmap. Research only counts as integration when source access, coverage, identifiers and reuse conditions have been verified.
 
 ## 1. San Donato apartment/property inventory
