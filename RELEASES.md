@@ -6,6 +6,8 @@ The user authorized publication to the existing repository and GitHub Pages site
 
 Publication uses an explicit runtime/data allowlist and source-only parcel read models. The ARPA geometry sample with unresolved redistribution rights is excluded from both this public release commit and Pages. Local development history and the v1.0.0 baseline remain preserved. Energy work stays deferred. Deployment verification follows the Pages workflow status and live browser checks.
 
+**Verified live:** https://daudee215.github.io/torino-units-map/ on 23 October 2026. Runtime release commit `4f4ead836a6b4e29ef13c8cb308b4dd36d7d002f`; Pages build/deploy succeeded: https://github.com/daudee215/torino-units-map/actions/runs/39925780340 . Live manifest reports 2.0.0 with 6,410 allowlisted files. Selected runtime/data/ZIP hashes match the manifest; excluded ARPA geometry and local review database return 404. Chrome verified subalterno 75 search, entrance 40966 filtering (13/27 identities), IT/EN, read-only review controls, and civic 17/C Street View with the resize handle. No application errors captured during these checks.
+
 ## 2.0.0-dev.4 — local parcel/property identity pivot
 
 23 October 2026. The user selected property/subalterno identity and entrance links as the priority, deferring energy development. Main navigation and map actions now prioritise the register. Added a parcel identity dossier with cadastral/address/floor search, investigation filters and per-entrance property drill-down preserving lettered civic numbers. Active counts exclude rejected/out-of-validity links without deleting review evidence. No new source-confirmed identities are claimed. See `PARCEL_DATA_PHASE.md`.

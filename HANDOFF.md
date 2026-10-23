@@ -2,6 +2,8 @@
 
 **Publication authorization — 23 October 2026:** the user requested pushing the current parcel-focused version to the existing GitHub site. This supersedes earlier local-only instructions for this release. Prepare `2.0.0` using the reviewed allowlist and a clean release commit based on public main; do not push local commits containing the unresolved-licence ARPA geometry. Preserve local development history and the v1 tag. Future work stays local until separately authorized. See `RELEASES.md` for deployment evidence.
 
+**Published and verified:** version 2.0.0 is live at https://daudee215.github.io/torino-units-map/ . Runtime commit `4f4ead8` was deployed successfully and checked in Chrome. The public release was built on `9cf579a` in branch `codex/publish-parcel-v2`, using the attached managed checkout `C:/Users/Daud/.codex/worktrees/parcel-public-v2/torino-units-map`. The primary local development branch retains the restricted sample in its historical commits: **never push that branch's history to the public remote**. Future publication must continue from the clean public release history and copy only reviewed files. The public register is read-only; local review data remains in the primary workspace.
+
 Updated: 22 October 2026 (Europe/Berlin).
 
 **Latest steering — 23 October 2026:** the user pivoted toward finer-grained parcel/property data and explicitly prioritised **property/subalterno identity and entrance links**, deferring energy work. Read `PARCEL_DATA_PHASE.md` first. Local `2.0.0-dev.4` makes the property register central and adds parcel identity filters plus lettered-entrance drill-down. The energy-phase text below is historical and no longer the active priority. No push or publication is authorized.
