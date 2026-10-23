@@ -1,4 +1,11 @@
+**Publication authorization — 23 October 2026:** the user requested publishing the whole-Torino version to the existing GitHub repository and Pages site. Prepare release `2.5.0` from clean public history. Include the reviewed source-only static city tiles/search/record shards and pilot workbench; exclude raw archives, SQLite databases, local workflow/notes and unresolved-licence ARPA geometry. Public review remains disabled. Later development returns to local-only.
+
+**Latest authorized local scope — 23 October 2026:** whole Torino municipality. Read `WHOLE_TORINO_PHASE.md` and the current HANDOFF. Local `2.5.0-dev.1` adds acquired citywide cadastral geometry, BDTRE footprints, municipal civics and a bounded searchable source catalogue. All pilot records/ledgers remain preserved. Source identity counts are not apartment counts; current entrances remain unverified. No new push/publication is authorized.
+
 # Project working instructions
+
+**Latest local phase — 23 October 2026:** the user authorized all five property-review steps. Read `PROPERTY_REVIEW_PHASE.md`. Local `2.3.0-dev.1` adds a 30-case source investigation, the full 178-key audit (171 inventory-only, 5 document-supported, 2 section differences), 32 additional query snapshots, explicit candidate/historical access chains, deduplicated source timelines and evidence-quality counts. All current access/site truth remains unverified; no accuracy score or completed cadastral changes are inferred. Checks and Chrome IT/EN/mobile/access-chain Street View verification passed. Published 2.2.0 remains unchanged; no new push is authorized.
+
 
 **Publication authorization — 23 October 2026:** the user requested publishing the current property-investigation version as 2.2.0 to the existing GitHub repository and Pages site. This supersedes earlier local-only statements for this release. Publish source-only static investigation dossiers, the reviewed municipal inventory pilot references and historical factual summaries, with attribution. Rebuild without reading local review events. Raw evidence, local reviews and unresolved-licence geometry remain excluded from both the artifact and new public history. Later development returns to local-only. Deployment verification is recorded in `RELEASES.md`.
 

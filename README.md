@@ -1,3 +1,9 @@
+**Publication authorization — 23 October 2026:** the user requested publishing the whole-Torino version to the existing GitHub repository and Pages site. Prepare release `2.5.0` from clean public history. Include the reviewed source-only static city tiles/search/record shards and pilot workbench; exclude raw archives, SQLite databases, local workflow/notes and unresolved-licence ARPA geometry. Public review remains disabled. Later development returns to local-only.
+
+**Whole-Torino local expansion — 23 October 2026:** read [WHOLE_TORINO_PHASE.md](WHOLE_TORINO_PHASE.md). Local `2.5.0-dev.1` adds actual citywide AdE parcel geometry (82,434 distinct cartographic references), 63,402 BDTRE footprints, 119,108 municipal civic points and 226,951 property/source identities with bounded map/search loading. Existing pilot identities and ledgers remain preserved. These are source records, not verified apartments or legal entrance links. No new publication is authorized.
+
+**Latest local phase — 23 October 2026:** read [PROPERTY_WORKSPACE_PHASE.md](PROPERTY_WORKSPACE_PHASE.md). Local `2.4.0-dev.1` adds the white property workspace, 178 searchable municipal-only references, 38 shared-key comparisons (31 APE records / 41 comparison rows), and two explicitly unresolved section cases. Case notes/status remain separate from source facts. Source/API and Chrome IT/EN/mobile/Street View/navigation checks passed. Published 2.2.0 is unchanged; no new push is authorized.
+
 # Unità San Donato
 
 **Release 2.2.0 — 23 October 2026:** property investigation with 24,706 property/group identities, 27,137 certificates, source-backed entrance alternatives, a 30-building review sample and municipal documentary/inventory references. Candidate access and historical evidence remain unconfirmed; this is not a complete apartment census. Online reviews are read-only. See `PROPERTY_VALIDATION_PHASE.md` and `RELEASES.md`. Earlier notes below preserve history.
