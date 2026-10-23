@@ -1,0 +1,66 @@
+{
+  "as_of": "2026-10-22",
+  "audit": {
+    "sample_features": 152,
+    "height_quality_codes": {
+      "To": 152
+    },
+    "matched_existing_footprints_iou_08": 19,
+    "original_coordinates_have_z": false,
+    "has_roof_planes": false,
+    "datum": "Horizontal EPSG:32632 at source, GeoJSON converted to EPSG:4326; absolute vertical datum not verified",
+    "bounds": [
+      7.6525,
+      45.077,
+      7.6555,
+      45.0795
+    ],
+    "retrieved": "2026-10-22",
+    "mase_advertised_1m_index_tiles": 8,
+    "mase_dsm_pixels_acquired": false
+  },
+  "summary_it": "Nessuna copertura LoD2/2.5 verificata nel pilota. Un campione ARPA di 152 geometrie contiene quote in gronda, non falde di tetto. Non si ricavano appartamenti da queste altezze.",
+  "summary_en": "No verified LoD2/2.5 coverage in the pilot. An ARPA sample of 152 footprints contains eaves heights, not roof planes. These heights do not identify apartments.",
+  "sources": [
+    {
+      "title": "MASE / PST-A · LiDAR 1 m",
+      "url": "https://gn.mase.gov.it/portale/distribuzione-dati-pst",
+      "status_it": "8 tavole indicizzate · raster non acquisito",
+      "status_en": "8 indexed tiles · raster not acquired",
+      "finding_it": "Il WFS nazionale restituisce 8 tavole da 1 m nel riquadro pilota (Contratto 140; data originale 080623, formato non confermato). Licenza CC BY 4.0. Il servizio download configurato dal viewer restituisce HTTP 404. Copertura dei pixel, datum verticale e falde non verificati.",
+      "finding_en": "The national WFS returns 8 advertised 1 m tiles in the pilot rectangle (Contract 140; raw date 080623, format unconfirmed). CC BY 4.0. The viewer-configured download service returns HTTP 404. Valid-pixel coverage, vertical datum and roof planes remain unverified."
+    },
+    {
+      "title": "ARPA · Edifici 3D 2017",
+      "url": "https://www.geoportale.piemonte.it/geonetwork/srv/api/records/arlpa_to:EDIF_2017-12-21-11:00",
+      "status_it": "Campione reale acquisito · solo altezze",
+      "status_en": "Real sample acquired · heights only",
+      "finding_it": "152 geometrie interrogate; 19 corrispondenze con impronte esistenti a IoU ≥ 0,8. Codice DES To; fonte Torino 2015. Licenza del map-service non recuperabile: campione solo locale.",
+      "finding_en": "152 queried footprints; 19 existing-footprint matches at IoU ≥ 0.8. DES code To; Torino 2015 source. Map-service license unavailable: sample remains local."
+    },
+    {
+      "title": "LINKS · Turin3D (2022 survey)",
+      "url": "https://huggingface.co/datasets/links-ads/Turin3D",
+      "status_it": "Fuori dal pilota · San Salvario",
+      "status_en": "Outside pilot · San Salvario",
+      "finding_it": "Il lavoro originale (arXiv:2504.05882, §3.3) localizza i 57 blocchi a San Salvario, non a San Donato. LiDAR aereo reale, ma nessun LoD2 pronto per questo pilota.",
+      "finding_en": "The original paper (arXiv:2504.05882, §3.3) locates its 57 blocks in San Salvario, not San Donato. Real aerial LiDAR, but no ready LoD2 for this pilot."
+    },
+    {
+      "title": "Piemonte · DSM ICE 2009–2011",
+      "url": "https://www.geoportale.piemonte.it/geonetwork/srv/api/records/r_piemon:12a0bdd2-166a-4825-8645-1a4605b70f48",
+      "status_it": "Metadati verificati · griglia 5 m",
+      "status_en": "Metadata verified · 5 m grid",
+      "finding_it": "Licenza CC BY 4.0 nei metadati. Nessun raster scaricabile recuperato da questa scheda. Risoluzione insufficiente per piccoli ostacoli e abbaini; non importato come tetto dettagliato.",
+      "finding_en": "Metadata specifies CC BY 4.0. No downloadable raster was recovered from this record. Too coarse for small obstructions and dormers; not imported as detailed roofs."
+    },
+    {
+      "title": "Torino · nuovo DB Geotopografico",
+      "url": "http://geoportale.comune.torino.it/web/node/3280",
+      "status_it": "Portale non raggiungibile",
+      "status_en": "Portal unreachable",
+      "finding_it": "La pagina indicizzata annuncia dati aperti. Il portale municipale non è raggiungibile durante la verifica; geometrie, copertura e datum dei prodotti non sono stati verificati.",
+      "finding_en": "The indexed page announces open data. The municipal portal was unreachable during verification; product geometry, coverage and datum remain unverified."
+    }
+  ]
+}
