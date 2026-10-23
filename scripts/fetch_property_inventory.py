@@ -12,6 +12,8 @@ import re
 import unicodedata
 from datetime import datetime, timezone
 import requests
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import threading
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = "https://energia-energiapt.piemontetu.it/fra-ept/restfacade/be/mgr/sicee/"
@@ -82,7 +84,7 @@ def run(limit=None, retry_unresolved=False):
         print(f"{index}/{len(streets)} {street}: {result['status']} ({result.get('returned_records', 0)})", flush=True)
 
 
-def capped_parcels(limit=30):
+def capped_parcels(limit=30,workers=1,retry_unresolved=False):
     """Target parcels on capped streets with the already observed citizen query.
 
     Cap flags remain on original searches. A parcel query without a municipality
@@ -92,21 +94,49 @@ def capped_parcels(limit=30):
             if (r:=json.loads(path.read_text(encoding='utf-8'))).get('status')=='possible_truncation'}
     entrances=json.loads((ROOT/'data/ingressi.json').read_text(encoding='utf-8'))['p']
     parcels=sorted({fp for street,fp in zip(entrances['VIA'],entrances['fp']) if street in capped and fp})
-    remaining=[fp for fp in parcels if not (CACHE/f"parcel-{fp.replace('/','-')}.json").exists()]
+    def needed(fp):
+        path=CACHE/f"parcel-{fp.replace('/','-')}.json"
+        if not path.exists():return True
+        old=json.loads(path.read_text(encoding='utf-8'))
+        return retry_unresolved and old.get('status')=='error'
+    remaining=[fp for fp in parcels if needed(fp)]
     print(f'{len(parcels)} parcels on capped streets; {len(remaining)} not yet queried',flush=True)
-    for fp in remaining[:limit]:
+    gate=threading.Lock();last_start=[0.0];stop=threading.Event();failures=[0]
+    def acquire(fp):
+        if stop.is_set():return
         sheet,parcel=fp.split('/')
         query=dict(sezione='',foglio=sheet,particella=parcel,subalterno='',type='catast',noteInterneCatast='')
         result=dict(parcel=fp,query=query,retrieved=datetime.now(timezone.utc).isoformat(),source=BASE+'ape',status='error')
         try:
+            # Bound concurrency and start at most one public request each second.
+            with gate:
+                time.sleep(max(0,1-(time.monotonic()-last_start[0])))
+                last_start[0]=time.monotonic()
+            if stop.is_set():return
             response=requests.post(BASE+'ape',json=query,timeout=(15,60));response.raise_for_status();rows=response.json()
             if not isinstance(rows,list):raise ValueError('Expected certificate array')
+            if any(not isinstance(r,dict) or not {'anno','certificatore','progressivo'}<=r.keys() for r in rows):
+                raise ValueError('Unexpected certificate schema')
             result.update(records=rows,returned_records=len(rows),complete_response=len(rows)<500,
                 status='possible_truncation' if len(rows)>=500 else 'queried')
-        except (requests.RequestException,ValueError) as exc:result['error']=str(exc)[:300]
-        save(CACHE/f"parcel-{fp.replace('/','-')}.json",result)
+            with gate:failures[0]=0
+        except (requests.RequestException,ValueError) as exc:
+            result['error']=str(exc)[:300]
+            with gate:
+                failures[0]+=1
+                if failures[0]>=5:stop.set()
+        target=CACHE/f"parcel-{fp.replace('/','-')}.json"
+        if target.exists():
+            previous=json.loads(target.read_text(encoding='utf-8'))
+            digest=hashlib.sha256(target.read_bytes()).hexdigest()[:16]
+            save(CACHE/'history'/f"{target.stem}-{digest}.json",previous)
+            result['retry_of']=previous.get('retrieved');result['attempt']=previous.get('attempt',1)+1
+        save(target,result)
         print(fp,result['status'],result.get('returned_records',0),flush=True)
-        time.sleep(1)
+    with ThreadPoolExecutor(max_workers=max(1,min(workers,3))) as pool:
+        jobs=[pool.submit(acquire,fp) for fp in remaining[:limit]]
+        for job in as_completed(jobs):job.result()
+    if stop.is_set():raise RuntimeError('Acquisition stopped after five consecutive failures; cached responses preserved')
 
 
 if __name__ == "__main__":
@@ -114,6 +144,7 @@ if __name__ == "__main__":
     parser.add_argument("--limit", type=int)
     parser.add_argument("--retry-unresolved", action='store_true')
     parser.add_argument("--capped-parcels",action='store_true')
+    parser.add_argument('--workers',type=int,default=1)
     args = parser.parse_args()
-    if args.capped_parcels:capped_parcels(args.limit or 30)
+    if args.capped_parcels:capped_parcels(args.limit or 30,args.workers,args.retry_unresolved)
     else:run(args.limit,args.retry_unresolved)

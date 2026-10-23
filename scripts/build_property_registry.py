@@ -332,13 +332,20 @@ def build():
     assert db.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
     assert not db.execute("PRAGMA foreign_key_check").fetchall()
     db.close()
-    summary=dict(version="2.1.0-dev.1",as_of=TODAY,built=datetime.now(timezone.utc).isoformat(),
+    capped_streets={r['street'] for r in source_runs if r['kind']=='street' and r['status']=='possible_truncation'}
+    targeted_parcels={e['fp'] for e in entrances if e.get('fp') and e['VIA'] in capped_streets}
+    targeted_runs=[r for r in source_runs if r['kind']=='parcel' and r.get('parcel') is not None]
+    summary=dict(version="2.2.0-dev.1",as_of=TODAY,built=datetime.now(timezone.utc).isoformat(),
         counts=dict(parcels=len(graph),parcels_with_evidence=sum(bool(g["properties"]) for g in graph.values()),
             properties=len(properties),identity_complete_properties=sum(p["identity_complete"] for p in properties.values()),
             certificates=len(certificates),eligible_certificates=sum(c["eligible_on_date"] for c in certificates.values()),
             properties_with_flags=sum(bool(p["flags"]) for p in properties.values()),
             street_queries=sum(r['kind']=="street" for r in source_runs),street_queries_capped=sum(r['kind']=='street' and r["status"] == "possible_truncation" for r in source_runs),
             targeted_parcel_queries=sum(r['kind']=='parcel' and r.get('parcel') is not None for r in source_runs),
+            targeted_parcel_search_total=len(targeted_parcels),
+            targeted_parcel_queries_error=sum(r['status']=='error' for r in targeted_runs),
+            targeted_parcel_queries_capped=sum(r['status']=='possible_truncation' for r in targeted_runs),
+            targeted_parcel_queries_empty=sum(r.get('returned_records')==0 and r['status']=='queried' for r in targeted_runs),
             properties_with_reported_interior=sum(bool(p['reported_interiors']) for p in properties.values()),
             properties_with_interior_conflict=sum('conflicting_reported_interiors' in p['flags'] for p in properties.values())),
         bulk_source=bulk_source,source_runs=source_runs,audit=dict(audit),

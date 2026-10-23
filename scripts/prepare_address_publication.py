@@ -4,6 +4,7 @@ No raw archives, local decisions, notes or database files are published.
 Run after rebuilding registry parcels. Requires the inspected local crosswalk.
 """
 import json
+import argparse
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -13,7 +14,7 @@ def select(value, fields):
     return {k:value[k] for k in fields if k in value}
 
 
-def prepare():
+def prepare(version='2.1.0'):
     source=json.loads((ROOT/'output/addresses/evidence.json').read_text(encoding='utf-8'))
     metadata=select(source,['anncsu_file','municipal_revision_advertised','built'])
     metadata['local_only']=False
@@ -42,8 +43,10 @@ def prepare():
         count+=1
     print(f'Reviewed static address evidence attached to {count} source-only parcel files.')
     path=ROOT/'data/registry/summary.json'
-    summary=json.loads(path.read_text(encoding='utf-8'));summary['version']='2.1.0'
+    summary=json.loads(path.read_text(encoding='utf-8'));summary['version']=version
     path.write_text(json.dumps(summary,ensure_ascii=False,separators=(',',':'),sort_keys=True),encoding='utf-8')
 
 
-if __name__=='__main__':prepare()
+if __name__=='__main__':
+    parser=argparse.ArgumentParser();parser.add_argument('--version',default='2.1.0')
+    prepare(parser.parse_args().version)
