@@ -1,3 +1,15 @@
+**Published and verified — 23 October 2026:** whole-Torino release **2.5.0** is live at https://daudee215.github.io/torino-units-map/ . Runtime commit `418e59a1250af0f56ae55bcadfae59902ba208d0`; successful build/deploy: https://github.com/daudee215/torino-units-map/actions/runs/39995396107 . Citywide geometry/search and the read-only 24,884-record pilot workbench are online. Raw archives, local databases/reviews and excluded ARPA geometry are not published. Source counts are not verified apartment counts; legal entrances remain unverified. Further development returns to local-only until separately authorized.
+
+## 2.5.0 deployment verification — 23 October 2026
+
+Runtime commit `418e59a1250af0f56ae55bcadfae59902ba208d0` was pushed by normal fast-forward from clean public history. Build and deployment succeeded: https://github.com/daudee215/torino-units-map/actions/runs/39995396107 . Primary development history was not pushed.
+
+Live manifest: 19,490 allowlisted files / 307,449,337 bytes. Eleven selected runtime/data hashes match the served manifest. Linux checkout LF normalization explains 24 text-file differences from the Windows preview; their normalized bytes also match. Gzip shards are unchanged.
+
+Chrome verified citywide parcel 1282/94 and its 14 source property records, city entrance search, automatic Via Roma 6 Street View with upper-left resize/minimize/restore/close, the read-only pilot workspace, IT/EN and saved language selection, and 390px layout without horizontal overflow. No captured application errors. Static adapters passed without a local API. Raw municipal GML, city SQLite, local case ledger and excluded ARPA geometry URLs return 404.
+
+Coverage: 82,434 cartographic parcel references, 63,402 BDTRE footprints, 119,108 municipal civic points and 226,951 property/source identities. Neither apartment completeness nor current legal entrance truth is inferred. Local screenshot: `output/qa/github-pages-v2.5-live.png`; HTTP/hash report: `output/qa/whole-torino-live-verification.json`. QA output remains ignored.
+
 **Publication authorization — 23 October 2026:** the user requested publishing the whole-Torino version to the existing GitHub repository and Pages site. Prepare release `2.5.0` from clean public history. Include the reviewed source-only static city tiles/search/record shards and pilot workbench; exclude raw archives, SQLite databases, local workflow/notes and unresolved-licence ARPA geometry. Public review remains disabled. Later development returns to local-only.
 
 **Whole-Torino local expansion — 23 October 2026:** read [WHOLE_TORINO_PHASE.md](WHOLE_TORINO_PHASE.md). Local `2.5.0-dev.1` adds actual citywide AdE parcel geometry (82,434 distinct cartographic references), 63,402 BDTRE footprints, 119,108 municipal civic points and 226,951 property/source identities with bounded map/search loading. Existing pilot identities and ledgers remain preserved. These are source records, not verified apartments or legal entrance links. No new publication is authorized.
