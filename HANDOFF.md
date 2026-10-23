@@ -1,5 +1,8 @@
 # Next-chat handoff — Torino apartment energy atlas
 
+**Verified live — 23 October 2026:** 2.2.0 is live at https://daudee215.github.io/torino-units-map/ . Runtime commit `0a624357b36ec93204a76bdc6e18fc701ff7e3cf`; build and deploy succeeded: https://github.com/daudee215/torino-units-map/actions/runs/39949309611 . Runtime manifest: 12,775 files / 164,156,719 bytes. Selected live runtime, registry, investigation summary, Digione dossier and ZIP hashes match the served manifest. Raw PDF, local database and full local inventory URLs return 404. Chrome verified final counts, static investigation/municipal references, Digione 113 versus 114 and source-page links, IT/EN, visible attribution and disabled review controls, with no captured application errors. Screenshot: ignored `output/qa/github-pages-v2.2-live.png`. Current legal entrances, physical apartment positions and documentary/site validation remain unverified. Further development returns to local-only.
+
+
 **Publication authorization — 23 October 2026:** the user requested publishing the current property-investigation version as 2.2.0 to the existing GitHub repository and Pages site. This supersedes earlier local-only statements for this release. Publish source-only static investigation dossiers, the reviewed municipal inventory pilot references and historical factual summaries, with attribution. Rebuild without reading local review events. Raw evidence, local reviews and unresolved-licence geometry remain excluded from both the artifact and new public history. Later development returns to local-only. Deployment verification is recorded in `RELEASES.md`.
 
 
