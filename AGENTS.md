@@ -1,5 +1,7 @@
 # Project working instructions
 
+- Latest authorization: the user also requested publishing the address-refinement update (2.1.0). Include the reviewed static municipal/ANNCSU/BDTRE parcel evidence with attribution, using `prepare_address_publication.py` and the bounded public build. Raw archives, local reviews and unresolved ARPA geometry remain excluded. This supersedes local-only statements for this release; further development returns to local-only.
+
 Read `HANDOFF.md`, `DATA_REVIEW.md`, `V2_ROADMAP.md` and `RELEASES.md` before continuing this project. They preserve the user's goal, preferences, verified state and limits.
 
 - Latest authorization (23 October 2026): publish the current parcel-focused version to the existing GitHub repository/Pages site. This supersedes the earlier local-only restriction for this release. Keep subsequent development local unless the user authorizes another publication. Use the reviewed publication allowlist; exclude raw evidence, local reviews and unresolved-licence geometry from both the public artifact and new public Git history.

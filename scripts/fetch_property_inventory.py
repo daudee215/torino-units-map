@@ -82,9 +82,38 @@ def run(limit=None, retry_unresolved=False):
         print(f"{index}/{len(streets)} {street}: {result['status']} ({result.get('returned_records', 0)})", flush=True)
 
 
+def capped_parcels(limit=30):
+    """Target parcels on capped streets with the already observed citizen query.
+
+    Cap flags remain on original searches. A parcel query without a municipality
+    field is not evidence that its returned cadastral municipality is Torino.
+    """
+    capped={r['street'] for path in CACHE.glob('street-*.json')
+            if (r:=json.loads(path.read_text(encoding='utf-8'))).get('status')=='possible_truncation'}
+    entrances=json.loads((ROOT/'data/ingressi.json').read_text(encoding='utf-8'))['p']
+    parcels=sorted({fp for street,fp in zip(entrances['VIA'],entrances['fp']) if street in capped and fp})
+    remaining=[fp for fp in parcels if not (CACHE/f"parcel-{fp.replace('/','-')}.json").exists()]
+    print(f'{len(parcels)} parcels on capped streets; {len(remaining)} not yet queried',flush=True)
+    for fp in remaining[:limit]:
+        sheet,parcel=fp.split('/')
+        query=dict(sezione='',foglio=sheet,particella=parcel,subalterno='',type='catast',noteInterneCatast='')
+        result=dict(parcel=fp,query=query,retrieved=datetime.now(timezone.utc).isoformat(),source=BASE+'ape',status='error')
+        try:
+            response=requests.post(BASE+'ape',json=query,timeout=(15,60));response.raise_for_status();rows=response.json()
+            if not isinstance(rows,list):raise ValueError('Expected certificate array')
+            result.update(records=rows,returned_records=len(rows),complete_response=len(rows)<500,
+                status='possible_truncation' if len(rows)>=500 else 'queried')
+        except (requests.RequestException,ValueError) as exc:result['error']=str(exc)[:300]
+        save(CACHE/f"parcel-{fp.replace('/','-')}.json",result)
+        print(fp,result['status'],result.get('returned_records',0),flush=True)
+        time.sleep(1)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--limit", type=int)
     parser.add_argument("--retry-unresolved", action='store_true')
+    parser.add_argument("--capped-parcels",action='store_true')
     args = parser.parse_args()
-    run(args.limit,args.retry_unresolved)
+    if args.capped_parcels:capped_parcels(args.limit or 30)
+    else:run(args.limit,args.retry_unresolved)

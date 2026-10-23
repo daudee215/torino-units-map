@@ -12,7 +12,7 @@ FILES = [
     "energy-model.js", "registry-workspace.js", "registry.css", "identity-evidence.js", "parcel-identity.js",
     "public-energy-model.js", "public-energy-workspace.js", "public-energy.css", ".nojekyll", "robots.txt", "sitemap.xml",
     "README.md", "HANDOFF.md", "DATA_REVIEW.md", "V2_ROADMAP.md", "RELEASES.md",
-    "PARCEL_DATA_PHASE.md", "V2_PROGRESS.md", "PUBLIC_ENERGY_PHASE.md",
+    "PARCEL_DATA_PHASE.md", "V2_PROGRESS.md", "PUBLIC_ENERGY_PHASE.md", "ADDRESS_REFINEMENT_PHASE.md",
     "vendor/leaflet.js", "vendor/turf.min.js", "vendor/jszip.min.js",
     "vendor/maplibre-gl.js", "vendor/maplibre-gl.css",
     "data/meta.json", "data/lotti.json", "data/edifici.json", "data/ingressi.json",
@@ -33,6 +33,10 @@ def publication_files():
     def check(path):
         data = json.loads(path.read_text(encoding="utf-8"))
         assert all("review" not in link for link in data["links"]), "Local review data in static source model"
+        addresses=data.get('address_evidence')
+        assert addresses and addresses['local_only'] is False, 'Missing reviewed static address evidence'
+        assert set(addresses['entrances'])=={str(e['COD_CIVICO']) for e in data['entrances']}
+        assert len(addresses['attribution'])==3
     with ThreadPoolExecutor(max_workers=16) as pool:
         list(pool.map(check, parcels))
     print(f"Validated {len(parcels)} source-only parcel files", flush=True)
@@ -60,7 +64,7 @@ def build():
     with ThreadPoolExecutor(max_workers=16) as pool:
         manifest = list(pool.map(copy, files))
     (DEST / "publication-manifest.json").write_text(
-        json.dumps({"version": "2.0.0", "files": manifest}, indent=2) + "\n", encoding="utf-8")
+        json.dumps({"version": "2.1.0", "files": manifest}, indent=2) + "\n", encoding="utf-8")
     print(f"Public artifact: {len(files)} reviewed files, {sum(f['bytes'] for f in manifest):,} bytes")
 
 

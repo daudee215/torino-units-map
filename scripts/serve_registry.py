@@ -48,6 +48,17 @@ class Handler(BaseHTTPRequestHandler):
         if not self.trusted_host():
             return self.answer(403,{"error":"Unapproved host"})
         path = urlparse(self.path).path
+        address_match = re.fullmatch(r"/api/address-evidence/(\d+)/([0-9A-Za-z]+)",path)
+        if address_match:
+            target = ROOT / "output/addresses/evidence.json"
+            if not target.exists():
+                return self.answer(404,{"error":"Address evidence has not been built"})
+            parcel_path=ROOT/'data/registry/parcels'/address_match[1]/(address_match[2]+'.json')
+            if not parcel_path.exists():return self.answer(404,{"error":"Parcel outside register"})
+            ids={str(e['COD_CIVICO']) for e in json.loads(parcel_path.read_text(encoding='utf-8'))['entrances']}
+            data=json.loads(target.read_text(encoding='utf-8'))
+            data['entrances']={k:v for k,v in data['entrances'].items() if k in ids}
+            return self.answer(200,data)
         if not DB.exists():
             return self.answer(503,{"error":"Registry has not been built"})
         if path == "/api/health":

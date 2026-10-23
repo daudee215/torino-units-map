@@ -31,8 +31,8 @@ def main():
         links=[dict(zip(['id','source','target','kind','status','evidence','valid_from','valid_to'],r)) for r in db.execute('SELECT id,source,target,kind,status,evidence,valid_from,valid_to FROM relationships ORDER BY id')]
     target=ROOT/'data/download/torino_property_registry_v2.zip'
     with zipfile.ZipFile(target,'w',zipfile.ZIP_DEFLATED) as archive:
-        archive.writestr('properties.csv',csv_bytes(properties,['id','scope','identity_complete','members','address','civic','floor','heated_area_m2','residential','certificates','latest_certificate','flags']))
-        archive.writestr('certificates.csv',csv_bytes(certificates,['id','public_code','source_record_id','property_id','members','object_scope','submitted','expires','status','eligible_on_date','address','civic','floor','heated_area_m2','source','source_kind','source_aliases','flags','standard_electricity_kwh_year']))
+        archive.writestr('properties.csv',csv_bytes(properties,['id','scope','identity_complete','members','address','civic','floor','reported_interiors','interior_observations','heated_area_m2','residential','certificates','latest_certificate','flags']))
+        archive.writestr('certificates.csv',csv_bytes(certificates,['id','public_code','source_record_id','property_id','members','object_scope','submitted','expires','status','eligible_on_date','address','civic','floor','interior_observations','heated_area_m2','source','source_kind','source_aliases','flags','standard_electricity_kwh_year']))
         archive.writestr('relationship_proposals.csv',csv_bytes(links,['id','source','target','kind','status','evidence','valid_from','valid_to']))
         archive.write(ROOT/'data/registry/summary.json','source-audit.json')
         archive.write(ROOT/'data/roof_evidence.json','roof-evidence.json')

@@ -1,5 +1,14 @@
 # Releases and deployment
 
+## 2.1.0 — address and property refinement, 23 October 2026
+
+User-authorized publication to the existing repository/Pages site. Includes the static per-parcel municipal/ANNCSU/BDTRE address crosswalk, reported interior observations and filters, plus 30 targeted parcel searches: 25,433 certificates and 23,522 property/group identities. Candidate address/access matches remain unconfirmed. Public review controls remain read-only. Raw downloads, local review records and unresolved-licence ARPA geometry are excluded. Deployment verification pending below.
+
+
+## 2.1.0-dev.1 — local address and property refinement
+
+23 October 2026. Current municipal civic CSV, ANNCSU address identifiers and actual BDTRE 2026 access candidates are available in a local per-parcel crosswalk. Added source-bearing interior observations, conservative placeholder/descriptor classification, filters and exports. First 30 targeted parcel searches add 33 certificates and 21 property/group identities. Details and remaining limits: `ADDRESS_REFINEMENT_PHASE.md`. No push/deployment; published 2.0.0 remains unchanged.
+
 ## 2.0.0 — parcel/property identity release, 23 October 2026
 
 The user authorized publication to the existing repository and GitHub Pages site. Includes the parcel identity dossier, subalterno search and investigation filters, per-entrance property lists with civic letters, and embedded Street View with upper-left resizing. Public review controls are read-only; local reviews and review notes are not published.

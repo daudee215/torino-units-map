@@ -1,7 +1,7 @@
 /* Local v2 property evidence and relationship review. No company measurements. */
 "use strict";
 window.PropertyRegistry = (() => {
-  const state = {summary:null,parcel:null,property:null,sequence:0,api:false,filters:{query:"",kind:"all",entrance:null}};
+  const state = {summary:null,addresses:null,parcel:null,property:null,sequence:0,api:false,filters:{query:"",kind:"all",entrance:null}};
   const local = ["localhost","127.0.0.1"].includes(location.hostname);
   const api = "http://127.0.0.1:8766";
   const label = (it,en) => tr(it,en);
@@ -13,6 +13,7 @@ window.PropertyRegistry = (() => {
     group:["Gruppo attestato","Attested group"]
   };
   const flagLabels = {
+    conflicting_reported_interiors:["Interni riportati discordanti: verificare le date e gli oggetti", "Conflicting reported interiors: check dates and attested objects"],
     missing_subalterno_or_identity:["Identità catastale incompleta","Incomplete cadastral identity"],
     multiple_eligible_certificates_review_renewals:["Più APE ammissibili: verificare rinnovi","Multiple eligible APEs: review renewals"],
     overlapping_cadastral_memberships:["Identificatori condivisi con altri gruppi","Identifiers overlap other attested groups"],
@@ -40,6 +41,10 @@ window.PropertyRegistry = (() => {
       const summary=state.summary;
       const fp=state.parcel || selected || summary.parcels.find(p=>p.properties)?.parcel;
       const data=await parcelData(fp);
+      state.addresses=data.address_evidence||null;
+      if(local){
+        try {state.addresses=await json(api+"/api/address-evidence/"+fp,{signal:AbortSignal.timeout(3000)});}catch(_){}
+      }
       if(sequence!==state.sequence)return;
       state.parcel=fp;
       if(!data.properties.some(p=>p.id===state.property))state.property=data.properties[0]?.id || null;
@@ -68,6 +73,9 @@ window.PropertyRegistry = (() => {
       <section class="registry-roofs" id="registryRoofs"></section>`;
     const select=el.querySelector("#registryParcel");
     const sourceDownload=document.createElement('a');sourceDownload.className='btn outline';sourceDownload.href='data/download/torino_property_registry_v2.zip';sourceDownload.download='torino_property_registry_v2.zip';sourceDownload.textContent=label('Scarica registro fonti (CSV)','Download source register (CSV)');el.querySelector('.registry-toolbar').append(sourceDownload);
+    const acquisition=document.createElement('p');acquisition.className='hint';
+    acquisition.textContent=label(`Dettagli acquisiti: ${fmt(count.properties_with_reported_interior||0)} identità con interno riportato; ${fmt(count.targeted_parcel_queries||0)} ricerche catastali mirate. I limiti delle ricerche per via restano visibili.`,`Acquired detail: ${fmt(count.properties_with_reported_interior||0)} identities with a reported interior; ${fmt(count.targeted_parcel_queries||0)} targeted cadastral searches. Street-search cap warnings remain visible.`);
+    el.querySelector('.registry-source-note').append(acquisition);
     function options(query="") {
       const q=query.trim().toLocaleLowerCase();
       const matches=summary.parcels.filter(x=>x.parcel===state.parcel||!q||`${x.parcel} ${x.addresses.join(" ")}`.toLocaleLowerCase().includes(q));
@@ -94,13 +102,14 @@ window.PropertyRegistry = (() => {
     });
     ParcelIdentity.render(el.querySelector('#parcelIdentityDossier'),data,identityIndex,state.filters,
       filters=>{state.filters=filters;draw(el,summary,data);},
-      id=>{const ent=entById.get(id);if(ent){setTab("map");selectLot(data.parcel,ent.id,{fit:true});openStreet(ent);}});
+      id=>{const ent=entById.get(id);if(ent){setTab("map");selectLot(data.parcel,ent.id,{fit:true});openStreet(ent);}},state.addresses);
     renderRoofs(el.querySelector("#registryRoofs"));
   }
   function propertyHtml(p,c,data){
     const links=data.links.filter(l=>(l.source===p.id || l.kind==='property_alias' && l.target===p.id) && l.status==="candidate");
     return `<div class="registry-identity"><div><span class="evidence">${translate(kinds[p.scope]||kinds.cadastral_property)}</span><h2>${p.members.map(m=>`${safe(m[2])}/${safe(m[3])}/${safe(m[4]||"?")}`).join(" + ")}</h2></div>${c?.inspected_pdf?`<span class="evidence">${label("PDF ispezionato","PDF inspected")}</span>`:""}</div>
-      <p>${safe(p.address)} ${safe(p.civic||"")}</p><dl class="registry-facts"><div><dt>${label("Piano","Floor")}</dt><dd>${safe(p.floor)}</dd></div><div><dt>${label("Superficie riscaldata","Heated area")}</dt><dd>${fmt(p.heated_area_m2,2)} m²</dd></div><div><dt>${label("Uso","Use")}</dt><dd>${p.residential?label("Residenziale","Residential"):label("Non residenziale / altro","Non-residential / other")}</dd></div><div><dt>${label("APE ammissibili alla data","Date-eligible APEs")}</dt><dd>${p.eligible_certificates}</dd></div></dl>
+      <p>${safe(p.address)} ${safe(p.civic||"")}</p><dl class="registry-facts"><div><dt>${label("Piano","Floor")}</dt><dd>${safe(p.floor)}</dd></div><div><dt>${label("Interni riportati negli APE","Interiors reported in APEs")}</dt><dd>${safe(p.reported_interiors?.join(' · ')||null)}</dd></div><div><dt>${label("Superficie riscaldata","Heated area")}</dt><dd>${fmt(p.heated_area_m2,2)} m²</dd></div><div><dt>${label("Uso","Use")}</dt><dd>${p.residential?label("Residenziale","Residential"):label("Non residenziale / altro","Non-residential / other")}</dd></div><div><dt>${label("APE ammissibili alla data","Date-eligible APEs")}</dt><dd>${p.eligible_certificates}</dd></div></dl>
+      ${p.interior_observations?.length?`<details><summary>${label('Provenienza degli interni · osservazioni, non identificatori catastali','Interior provenance · observations, not cadastral identifiers')}</summary><p class="hint">${label('Sono conservati anche valori grezzi e segnaposto. Osservazioni discordanti non sono unite in un singolo interno.','Raw values and placeholders are retained. Conflicting observations are not collapsed into one interior number.')}</p><ul>${p.interior_observations.map(o=>`<li>${safe(o.raw)} → ${safe(o.normalized||label(o.kind==='descriptor'?'descrizione, non numero interno':o.kind==='needs_review'?'valore da verificare':'segnaposto / non indicato',o.kind==='descriptor'?'descriptor, not an interior number':o.kind==='needs_review'?'value requiring review':'placeholder / not reported'))} · ${safe(o.submitted)} · ${safe(o.certificate_id)} · <a href="${safe(o.source)}" target="_blank" rel="noopener noreferrer">${label('fonte regionale','regional source')}</a></li>`).join('')}</ul></details>`:''}
       <p class="registry-warning">${label("La superficie riguarda l'oggetto attestato; non si duplica per subalterno. Piano e accesso non costituiscono una geometria interna.","Area belongs to the attested object and is not duplicated per subalterno. Floor and entrance do not establish interior geometry.")}</p>
       ${p.flags.length?`<ul class="registry-flags">${p.flags.map(f=>`<li>${safe(flagLabels[f]?translate(flagLabels[f]):f)}</li>`).join("")}</ul>`:""}
       <details><summary>${label("Identificatori catastali originali","Original cadastral identifiers")}</summary><ul>${p.members.map(m=>`<li>${safe(m[0])} · ${label("sezione","section")} ${safe(m[1]||label("non indicata","not reported"))} · ${safe(m[2])}/${safe(m[3])}/${safe(m[4]||"?")}</li>`).join("")}</ul></details>
