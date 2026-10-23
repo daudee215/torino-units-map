@@ -48,6 +48,11 @@ class Handler(BaseHTTPRequestHandler):
         if not self.trusted_host():
             return self.answer(403,{"error":"Unapproved host"})
         path = urlparse(self.path).path
+        investigation = re.fullmatch(r'/api/investigation(?:/(\d+)/([0-9A-Za-z]+))?',path)
+        if investigation:
+            target=(ROOT/'output/investigation/parcels'/investigation[1]/(investigation[2]+'.json')) if investigation[1] else ROOT/'output/investigation/summary.json'
+            if not target.exists():return self.answer(404,{'error':'Investigation evidence not built'})
+            return self.answer(200,json.loads(target.read_text(encoding='utf-8')))
         address_match = re.fullmatch(r"/api/address-evidence/(\d+)/([0-9A-Za-z]+)",path)
         if address_match:
             target = ROOT / "output/addresses/evidence.json"
