@@ -1,8 +1,11 @@
 # Releases and deployment
 
+**Verified live — 23 October 2026:** 2.2.0 is live at https://daudee215.github.io/torino-units-map/ . Runtime commit `0a624357b36ec93204a76bdc6e18fc701ff7e3cf`; build and deploy succeeded: https://github.com/daudee215/torino-units-map/actions/runs/39949309611 . Runtime manifest: 12,775 files / 164,156,719 bytes. Selected live runtime, registry, investigation summary, Digione dossier and ZIP hashes match the served manifest. Raw PDF, local database and full local inventory URLs return 404. Chrome verified final counts, static investigation/municipal references, Digione 113 versus 114 and source-page links, IT/EN, visible attribution and disabled review controls, with no captured application errors. Screenshot: ignored `output/qa/github-pages-v2.2-live.png`. Current legal entrances, physical apartment positions and documentary/site validation remain unverified. Further development returns to local-only.
+
+
 ## 2.2.0 — property investigation, 23 October 2026
 
-User-authorized publication. Adds the complete 1,150-query targeted run, 24,706 property/group identities and 27,137 certificates, source-only access alternatives and evidence facets, a 30-building review cohort, eight curated historical observations and 228 municipal inventory references on 65 pilot parcels. Static investigation works without a local API. Reviews remain read-only publicly. Exact apartment positions/current legal entrances remain unverified. Raw evidence, local decisions and excluded geometry are not published. See `PROPERTY_VALIDATION_PHASE.md` for source/grain/licence review. Deployment verification pending.
+User-authorized publication. Adds the complete 1,150-query targeted run, 24,706 property/group identities and 27,137 certificates, source-only access alternatives and evidence facets, a 30-building review cohort, eight curated historical observations and 228 municipal inventory references on 65 pilot parcels. Static investigation works without a local API. Reviews remain read-only publicly. Exact apartment positions/current legal entrances remain unverified. Raw evidence, local decisions and excluded geometry are not published. See `PROPERTY_VALIDATION_PHASE.md` for source/grain/licence review. Build/deploy and live verification succeeded; see the verification record above.
 
 ## 2.2.0-dev.1 — local property investigation, 23 October 2026
 
