@@ -1,7 +1,7 @@
 /* Local v2 property evidence and relationship review. No company measurements. */
 "use strict";
 window.PropertyRegistry = (() => {
-  const state = {summary:null,addresses:null,parcel:null,property:null,sequence:0,api:false,filters:{query:"",kind:"all",entrance:null}};
+  const state = {summary:null,addresses:null,investigation:null,investigationSummary:null,parcel:null,property:null,sequence:0,api:false,filters:{query:"",kind:"all",entrance:null}};
   const local = ["localhost","127.0.0.1"].includes(location.hostname);
   const api = "http://127.0.0.1:8766";
   const label = (it,en) => tr(it,en);
@@ -45,6 +45,19 @@ window.PropertyRegistry = (() => {
       if(local){
         try {state.addresses=await json(api+"/api/address-evidence/"+fp,{signal:AbortSignal.timeout(3000)});}catch(_){}
       }
+      state.investigation=null;
+      if(local){
+        try {
+          const [details,summary]=await Promise.all([json(api+'/api/investigation/'+fp),state.investigationSummary||json(api+'/api/investigation')]);
+          state.investigation=details;state.investigationSummary=summary;
+        }catch(_){}
+      }
+      if(!state.investigation){
+        try {
+          const [details,investigationSummary]=await Promise.all([json('data/investigation/parcels/'+fp+'.json'),state.investigationSummary||json('data/investigation/summary.json')]);
+          state.investigation=details;state.investigationSummary=investigationSummary;
+        }catch(_){}
+      }
       if(sequence!==state.sequence)return;
       state.parcel=fp;
       if(!data.properties.some(p=>p.id===state.property))state.property=data.properties[0]?.id || null;
@@ -76,6 +89,7 @@ window.PropertyRegistry = (() => {
     const acquisition=document.createElement('p');acquisition.className='hint';
     acquisition.textContent=label(`Dettagli acquisiti: ${fmt(count.properties_with_reported_interior||0)} identità con interno riportato; ${fmt(count.targeted_parcel_queries||0)} ricerche catastali mirate. I limiti delle ricerche per via restano visibili.`,`Acquired detail: ${fmt(count.properties_with_reported_interior||0)} identities with a reported interior; ${fmt(count.targeted_parcel_queries||0)} targeted cadastral searches. Street-search cap warnings remain visible.`);
     el.querySelector('.registry-source-note').append(acquisition);
+    if(count.targeted_parcel_search_total){const progress=document.createElement('p');progress.className='hint';progress.textContent=label(`Ricerche catastali mirate: ${fmt(count.targeted_parcel_queries)} / ${fmt(count.targeted_parcel_search_total)} tentate; ${fmt(count.targeted_parcel_queries_error||0)} errori, ${fmt(count.targeted_parcel_queries_capped||0)} risposte al limite, ${fmt(count.targeted_parcel_queries_empty||0)} risposte vuote. Una risposta vuota o sotto il limite non dimostra completezza.`,`Targeted cadastral searches: ${fmt(count.targeted_parcel_queries)} / ${fmt(count.targeted_parcel_search_total)} attempted; ${fmt(count.targeted_parcel_queries_error||0)} errors, ${fmt(count.targeted_parcel_queries_capped||0)} capped responses, ${fmt(count.targeted_parcel_queries_empty||0)} empty responses. Empty or below-cap responses do not establish completeness.`);el.querySelector('.registry-source-note').append(progress);}
     function options(query="") {
       const q=query.trim().toLocaleLowerCase();
       const matches=summary.parcels.filter(x=>x.parcel===state.parcel||!q||`${x.parcel} ${x.addresses.join(" ")}`.toLocaleLowerCase().includes(q));
@@ -103,6 +117,9 @@ window.PropertyRegistry = (() => {
     ParcelIdentity.render(el.querySelector('#parcelIdentityDossier'),data,identityIndex,state.filters,
       filters=>{state.filters=filters;draw(el,summary,data);},
       id=>{const ent=entById.get(id);if(ent){setTab("map");selectLot(data.parcel,ent.id,{fit:true});openStreet(ent);}},state.addresses);
+    const investigation=document.createElement('section');
+    el.querySelector('#parcelIdentityDossier').after(investigation);
+    InvestigationView.render(investigation,state.investigationSummary,state.investigation,data,fp=>{state.parcel=fp;state.property=null;state.filters={query:'',kind:'all',entrance:null};render(el);});
     renderRoofs(el.querySelector("#registryRoofs"));
   }
   function propertyHtml(p,c,data){
@@ -113,7 +130,7 @@ window.PropertyRegistry = (() => {
       <p class="registry-warning">${label("La superficie riguarda l'oggetto attestato; non si duplica per subalterno. Piano e accesso non costituiscono una geometria interna.","Area belongs to the attested object and is not duplicated per subalterno. Floor and entrance do not establish interior geometry.")}</p>
       ${p.flags.length?`<ul class="registry-flags">${p.flags.map(f=>`<li>${safe(flagLabels[f]?translate(flagLabels[f]):f)}</li>`).join("")}</ul>`:""}
       <details><summary>${label("Identificatori catastali originali","Original cadastral identifiers")}</summary><ul>${p.members.map(m=>`<li>${safe(m[0])} · ${label("sezione","section")} ${safe(m[1]||label("non indicata","not reported"))} · ${safe(m[2])}/${safe(m[3])}/${safe(m[4]||"?")}</li>`).join("")}</ul></details>
-      <h3>${label("Collegamenti proposti · revisione","Proposed relationships · review")}</h3><p class="hint">${label("Una corrispondenza di indirizzo è una proposta; la vicinanza di un edificio non identifica l'appartamento. Accetta solo con evidenze aggiuntive.","An address match is a proposal; a nearby building does not identify the apartment. Accept only with additional evidence.")}</p>
+      ${InvestigationView.property(p,state.investigation)}<h3>${label("Collegamenti proposti · revisione","Proposed relationships · review")}</h3><p class="hint">${label("Una corrispondenza di indirizzo è una proposta; la vicinanza di un edificio non identifica l'appartamento. Accetta solo con evidenze aggiuntive.","An address match is a proposal; a nearby building does not identify the apartment. Accept only with additional evidence.")}</p>
       ${links.map(l=>linkHtml(l,data,p)).join("") || `<p>${label("Nessun collegamento candidato disponibile.","No candidate relationships available.")}</p>`}
       <h3>${label("Storico attestati e provenienza","Certificate history & provenance")}</h3>
       <div class="registry-certificates">${p.certificates.map(id=>certificateHtml(data.certificates.find(x=>x.id===id))).join("")}</div>`;

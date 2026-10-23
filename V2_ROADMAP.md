@@ -1,5 +1,8 @@
 # Version two — six agreed priorities
 
+**Publication authorization — 23 October 2026:** the user requested publishing the current property-investigation version as 2.2.0 to the existing GitHub repository and Pages site. This supersedes earlier local-only statements for this release. Publish source-only static investigation dossiers, the reviewed municipal inventory pilot references and historical factual summaries, with attribution. Rebuild without reading local review events. Raw evidence, local reviews and unresolved-licence geometry remain excluded from both the artifact and new public history. Later development returns to local-only. Deployment verification is recorded in `RELEASES.md`.
+
+
 **Latest scope override — 23 October 2026:** refined parcel/property data comes first, specifically **property/subalterno identity and entrance links**, as selected by the user. `PARCEL_DATA_PHASE.md` is the current plan. Defer further energy development and company integration. Prioritise exact identity keys, capped-query coverage, civic-letter matching and source-backed relationship review. All work remains local.
 
 **Current scope override — 22 October 2026:** the user now asks to focus on the four public-data steps described in `PUBLIC_ENERGY_PHASE.md`: joined property view, demand estimates, roof solar screening, annual/monthly comparisons. Company/meter integration is deferred; do not implement it in this phase. The original priorities below preserve context. The public-data screening workspace is implemented locally in `2.0.0-dev.3`; verified roofs and aligned hourly simultaneity remain unresolved.

@@ -1,5 +1,8 @@
 # Project working instructions
 
+**Publication authorization — 23 October 2026:** the user requested publishing the current property-investigation version as 2.2.0 to the existing GitHub repository and Pages site. This supersedes earlier local-only statements for this release. Publish source-only static investigation dossiers, the reviewed municipal inventory pilot references and historical factual summaries, with attribution. Rebuild without reading local review events. Raw evidence, local reviews and unresolved-licence geometry remain excluded from both the artifact and new public history. Later development returns to local-only. Deployment verification is recorded in `RELEASES.md`.
+
+
 - Latest authorization: the user also requested publishing the address-refinement update (2.1.0). Include the reviewed static municipal/ANNCSU/BDTRE parcel evidence with attribution, using `prepare_address_publication.py` and the bounded public build. Raw archives, local reviews and unresolved ARPA geometry remain excluded. This supersedes local-only statements for this release; further development returns to local-only.
 
 Read `HANDOFF.md`, `DATA_REVIEW.md`, `V2_ROADMAP.md` and `RELEASES.md` before continuing this project. They preserve the user's goal, preferences, verified state and limits.
