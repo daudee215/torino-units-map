@@ -1,5 +1,11 @@
 # Reviewed public-data integration — 22 October 2026
 
+**Publication authorization — 23 October 2026:** the user requested publishing the current property-investigation version as 2.2.0 to the existing GitHub repository and Pages site. This supersedes earlier local-only statements for this release. Publish source-only static investigation dossiers, the reviewed municipal inventory pilot references and historical factual summaries, with attribution. Rebuild without reading local review events. Raw evidence, local reviews and unresolved-licence geometry remain excluded from both the artifact and new public history. Later development returns to local-only. Deployment verification is recorded in `RELEASES.md`.
+
+
+**Latest local work — 23 October 2026:** read `PROPERTY_VALIDATION_PHASE.md`. Local `2.2.0-dev.1` completes 1,150 targeted parcel queries (0 remaining errors), yielding 24,706 property/group identities and 27,137 certificates. Adds local municipal inventory evidence (228 pilot references on 65 parcels), historical document observations, spatial access alternatives, a priority queue and 30-case review cohort. Documentary entrance/site validation remains pending. Checks and Chrome IT/EN/phone/Street View verification passed. Published 2.1.0 is unchanged; no new push is authorized.
+
+
 **Address release review — 23 October 2026:** 2.1.0 includes curated municipal/ANNCSU/BDTRE address candidates per parcel, with provider attribution and CC BY 4.0 source references. ANNCSU data-use statement: https://www.anncsu.gov.it/it/consultazione-dellarchivio/ricerca-strade-e-numeri-civici/ . Publication is limited to source address/access fields and candidate evidence; no local reviews, raw downloads, new roof geometry or confirmed apartment access is inferred. See ADDRESS_REFINEMENT_PHASE.md.
 
 **Current focus — 23 October 2026:** property/subalterno identities and civic-entrance relationships, described in `PARCEL_DATA_PHASE.md`. No new authoritative identities are claimed by the dossier/filter changes. Proposed, accepted-in-review, rejected and out-of-validity relationships remain distinct; acceptance is not legal cadastral verification. Energy development is deferred.

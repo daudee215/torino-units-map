@@ -1,5 +1,14 @@
 # Releases and deployment
 
+## 2.2.0 — property investigation, 23 October 2026
+
+User-authorized publication. Adds the complete 1,150-query targeted run, 24,706 property/group identities and 27,137 certificates, source-only access alternatives and evidence facets, a 30-building review cohort, eight curated historical observations and 228 municipal inventory references on 65 pilot parcels. Static investigation works without a local API. Reviews remain read-only publicly. Exact apartment positions/current legal entrances remain unverified. Raw evidence, local decisions and excluded geometry are not published. See `PROPERTY_VALIDATION_PHASE.md` for source/grain/licence review. Deployment verification pending.
+
+## 2.2.0-dev.1 — local property investigation, 23 October 2026
+
+**Latest local work — 23 October 2026:** read `PROPERTY_VALIDATION_PHASE.md`. Local `2.2.0-dev.1` completes 1,150 targeted parcel queries (0 remaining errors), yielding 24,706 property/group identities and 27,137 certificates. Adds local municipal inventory evidence (228 pilot references on 65 parcels), historical document observations, spatial access alternatives, a priority queue and 30-case review cohort. Documentary entrance/site validation remains pending. Checks and Chrome IT/EN/phone/Street View verification passed. Published 2.1.0 is unchanged; no new push is authorized.
+
+
 ## 2.1.0 — address and property refinement, 23 October 2026
 
 User-authorized publication to the existing repository/Pages site. Includes the static per-parcel municipal/ANNCSU/BDTRE address crosswalk, reported interior observations and filters, plus 30 targeted parcel searches: 25,433 certificates and 23,522 property/group identities. Candidate address/access matches remain unconfirmed. Public review controls remain read-only. Raw downloads, local review records and unresolved-licence ARPA geometry are excluded. **Verified live — 23 October 2026:** 2.1.0 is available at https://daudee215.github.io/torino-units-map/ . Runtime commit `8559e6759358aafa2f2fee6641804f0af48a87d2`; successful build/deploy https://github.com/daudee215/torino-units-map/actions/runs/39931361195 . Live manifest contains 6,411 files; selected runtime, summary, parcel and ZIP hashes match. Chrome verified the static 1175/434 crosswalk (8/8 ANNCSU candidates, BDTRE access evidence), read-only review controls and no captured browser errors. Raw ANNCSU ZIP, local database and excluded ARPA geometry URLs return 404. Screenshot: ignored `output/qa/github-pages-v2.1-live.png`. No actual property entrances or LoD2 roofs are newly confirmed.

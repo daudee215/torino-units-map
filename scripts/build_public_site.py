@@ -9,10 +9,11 @@ ROOT = Path(__file__).resolve().parents[1]
 DEST = ROOT / "dist"
 FILES = [
     "index.html", "styles.css", "workspace.css", "app.js", "workspace.js",
-    "energy-model.js", "registry-workspace.js", "registry.css", "identity-evidence.js", "parcel-identity.js",
+    "energy-model.js", "registry-workspace.js", "registry.css", "identity-evidence.js", "parcel-identity.js", "investigation-view.js",
     "public-energy-model.js", "public-energy-workspace.js", "public-energy.css", ".nojekyll", "robots.txt", "sitemap.xml",
     "README.md", "HANDOFF.md", "DATA_REVIEW.md", "V2_ROADMAP.md", "RELEASES.md",
-    "PARCEL_DATA_PHASE.md", "V2_PROGRESS.md", "PUBLIC_ENERGY_PHASE.md", "ADDRESS_REFINEMENT_PHASE.md",
+    "PARCEL_DATA_PHASE.md", "V2_PROGRESS.md", "PUBLIC_ENERGY_PHASE.md", "ADDRESS_REFINEMENT_PHASE.md", "PROPERTY_VALIDATION_PHASE.md",
+    "data/investigation/summary.json",
     "vendor/leaflet.js", "vendor/turf.min.js", "vendor/jszip.min.js",
     "vendor/maplibre-gl.js", "vendor/maplibre-gl.css",
     "data/meta.json", "data/lotti.json", "data/edifici.json", "data/ingressi.json",
@@ -39,8 +40,10 @@ def publication_files():
         assert len(addresses['attribution'])==3
     with ThreadPoolExecutor(max_workers=16) as pool:
         list(pool.map(check, parcels))
+    from check_public_investigation import check as check_investigation
+    investigation=check_investigation(ROOT)
     print(f"Validated {len(parcels)} source-only parcel files", flush=True)
-    return FILES + [p.relative_to(ROOT).as_posix() for p in parcels]
+    return FILES + [p.relative_to(ROOT).as_posix() for p in parcels+investigation]
 
 
 def build():
@@ -64,7 +67,7 @@ def build():
     with ThreadPoolExecutor(max_workers=16) as pool:
         manifest = list(pool.map(copy, files))
     (DEST / "publication-manifest.json").write_text(
-        json.dumps({"version": "2.1.0", "files": manifest}, indent=2) + "\n", encoding="utf-8")
+        json.dumps({"version": "2.2.0", "files": manifest}, indent=2) + "\n", encoding="utf-8")
     print(f"Public artifact: {len(files)} reviewed files, {sum(f['bytes'] for f in manifest):,} bytes")
 
 

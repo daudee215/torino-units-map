@@ -20,6 +20,7 @@ jobs:
           node --check registry-workspace.js
           node --check parcel-identity.js
           node --check identity-evidence.js
+          node --check investigation-view.js
           node scripts/check-energy.cjs
           node scripts/check-identity-evidence.cjs
       - name: Build allowlisted public artifact
