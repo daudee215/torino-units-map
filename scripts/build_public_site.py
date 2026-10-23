@@ -69,7 +69,7 @@ def build():
     with ThreadPoolExecutor(max_workers=16) as pool:
         manifest = list(pool.map(copy, files))
     (DEST / "publication-manifest.json").write_text(
-        json.dumps({"version": "2.5.0", "files": manifest}, indent=2) + "\n", encoding="utf-8")
+        json.dumps({"version": "2.5.1", "files": manifest}, indent=2) + "\n", encoding="utf-8")
     print(f"Public artifact: {len(files)} reviewed files, {sum(f['bytes'] for f in manifest):,} bytes")
 
 

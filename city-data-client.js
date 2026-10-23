@@ -2,7 +2,7 @@
 window.CityDataClient=(()=>{
  const BASE='data/city/';const cache=new Map();let summaryPromise;
  const local=['127.0.0.1','localhost'].includes(location.hostname)&&!new URLSearchParams(location.search).has('staticCity');
- function load(path){if(cache.has(path))return cache.get(path);const p=fetch(BASE+path).then(async r=>{if(r.status===404)return null;if(!r.ok)throw Error('City source file unavailable');if(path.endsWith('.gz')){if(typeof DecompressionStream==='undefined')throw Error('Please use a browser supporting gzip decompression');return new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).json();}return r.json();}).catch(err=>{cache.delete(path);throw err;});cache.set(path,p);if(cache.size>100)cache.delete(cache.keys().next().value);return p;}
+ function load(path){if(cache.has(path))return cache.get(path);const p=fetch(BASE+path+'?v=2.5.1').then(async r=>{if(r.status===404)return null;if(!r.ok)throw Error('City source file unavailable');if(path.endsWith('.gz')){if(typeof DecompressionStream==='undefined')throw Error('Please use a browser supporting gzip decompression');return new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).json();}return r.json();}).catch(err=>{cache.delete(path);throw err;});cache.set(path,p);if(cache.size>100)cache.delete(cache.keys().next().value);return p;}
  function summary(){return summaryPromise??=load('summary.json').then(s=>{if(!s)throw Error('City publication unavailable');return s;});}
  function tokens(text){return text.toLowerCase().normalize('NFD').replace(/\p{M}/gu,'').match(/[\p{L}\p{N}]+/gu)||[];}
  const hex=s=>Array.from(new TextEncoder().encode(s),b=>b.toString(16).padStart(2,'0')).join('');
@@ -27,7 +27,15 @@ window.CityDataClient=(()=>{
   }
   throw Error('Unknown city source request');
  }
- return {get,local,load};
+ async function overview(bbox){
+  const s=await summary(),o=s.static.overview;if(!o)throw Error('City parcel overview unavailable');
+  const b=bbox.split(',').map(Number);if(b.length!==4||!b.every(Number.isFinite))throw Error('Invalid overview bounds');
+  const keys=o.tiles.filter(key=>{const [x,y]=key.split('_').map(Number);return x*o.step<=b[2]&&(x+1)*o.step>=b[0]&&y*o.step<=b[3]&&(y+1)*o.step>=b[1];});
+  const rows=await Promise.all(keys.map(key=>load('overview/'+key+'.json.gz'))),features=new Map();
+  for(const f of rows.flat().filter(Boolean)){const a=f.properties.bbox;if(a[0]<=b[2]&&a[2]>=b[0]&&a[1]<=b[3]&&a[3]>=b[1])features.set(f.id,f);}
+  return {type:'FeatureCollection',features:[...features.values()],simplification_m:o.simplification_m};
+ }
+ return {get,local,load,overview};
 })();
 window.PropertyDataClient=(()=>{
  async function get(path){

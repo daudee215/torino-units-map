@@ -15,19 +15,64 @@ window.CityWorkspace=(()=>{
   deactivate();root=host;options=opts;const seq=sequence;
   host.classList.add('city-workspace-host');host.innerHTML=`<div class="empty">${t('Caricamento catalogo di Torino…','Loading Torino catalogue…')}</div>`;
   try{summary=await get('');if(seq!==sequence||!root)return;
-   host.innerHTML=`<section class="city-workspace"><header class="city-heading"><div><small>TORINO / L219</small><h1>${t('Atlante immobili · tutta Torino','Property atlas · whole Torino')}</h1></div><span>${n(summary.counts.parcel)} ${t('riferimenti cartografici','cartographic references')} · ${n(summary.counts.building)} ${t('edifici','buildings')} · ${window.CityDataClient.local?t('Locale 2.5','Local 2.5'):'2.5.0'}</span><button class="btn outline" id="cityExtent">${t('Intero comune','Whole municipality')}</button></header><div class="city-body"><aside class="city-search"><label for="cityQuery">${t('Indirizzo, foglio / particella / subalterno','Address, sheet / parcel / subalterno')}</label><input id="cityQuery" type="search" value="${e(state.query)}" placeholder="${t('Cerca in tutta Torino…','Search all Torino…')}"><label for="cityKind">${t('Tipo di record','Record type')}</label><select id="cityKind">${[['property','Immobili / gruppi','Properties / groups'],['parcel','Particelle','Parcels'],['entrance','Ingressi civici','Civic entrances'],['building','Edifici BDTRE','BDTRE buildings']].map(([v,it,en])=>`<option value="${v}" ${v===state.kind?'selected':''}>${t(it,en)}</option>`).join('')}</select><div id="cityFilter"></div><p id="cityResultsCount" role="status"></p><div id="cityResults"></div><div class="city-pagination"><button class="btn outline" id="cityPrev">←</button><span id="cityRange"></span><button class="btn outline" id="cityNext">→</button></div></aside><div class="city-mapwrap"><div id="cityMap" aria-label="${t('Mappa di tutta Torino','Whole Torino map')}"></div><div class="city-map-status" id="cityMapStatus" role="status"></div></div><aside class="city-inspector" id="cityInspector">${coverage()}</aside></div><footer>${t('Particelle e edifici caricati solo nella vista · seleziona un elemento per esplorare le fonti','Parcels and buildings load only in the current view · select a feature to explore its sources')}</footer></section>`;
+   host.innerHTML=`<section class="city-workspace"><header class="city-heading"><div><small>TORINO / L219</small><h1>${t('Atlante immobili · tutta Torino','Property atlas · whole Torino')}</h1></div><span>${n(summary.counts.parcel)} ${t('riferimenti cartografici','cartographic references')} · ${n(summary.counts.building)} ${t('edifici','buildings')} · ${window.CityDataClient.local?t('Locale 2.5.1','Local 2.5.1'):e(summary.version)}</span><div class="city-extent-controls"><button class="btn outline" id="cityExtent">${t('Intero comune','Whole municipality')}</button><button class="btn outline" id="cityNorth">${t('Torino nord','North Torino')}</button><button class="btn outline" id="citySouth">${t('Torino sud','South Torino')}</button></div></header><div class="city-body"><aside class="city-search"><label for="cityQuery">${t('Indirizzo, foglio / particella / subalterno','Address, sheet / parcel / subalterno')}</label><input id="cityQuery" type="search" value="${e(state.query)}" placeholder="${t('Cerca in tutta Torino…','Search all Torino…')}"><label for="cityKind">${t('Tipo di record','Record type')}</label><select id="cityKind">${[['property','Immobili / gruppi','Properties / groups'],['parcel','Particelle','Parcels'],['entrance','Ingressi civici','Civic entrances'],['building','Edifici BDTRE','BDTRE buildings']].map(([v,it,en])=>`<option value="${v}" ${v===state.kind?'selected':''}>${t(it,en)}</option>`).join('')}</select><div id="cityFilter"></div><p id="cityResultsCount" role="status"></p><div id="cityResults"></div><div class="city-pagination"><button class="btn outline" id="cityPrev">←</button><span id="cityRange"></span><button class="btn outline" id="cityNext">→</button></div></aside><div class="city-mapwrap"><div id="cityMap" aria-label="${t('Mappa di tutta Torino','Whole Torino map')}"></div><div class="city-map-status" id="cityMapStatus" role="status"></div></div><aside class="city-inspector" id="cityInspector">${coverage()}</aside></div><footer>${t('Particelle e edifici caricati solo nella vista · seleziona un elemento per esplorare le fonti','Parcels and buildings load only in the current view · select a feature to explore its sources')}</footer></section>`;
    opts.street.hidden=true;host.querySelector('.city-mapwrap').append(opts.street);
    cm=L.map('cityMap',{minZoom:10,maxZoom:21,preferCanvas:true}).setView(state.center||[45.067,7.69],state.zoom);
+   if(!state.center)cm.fitBounds([[summary.bounds[1],summary.bounds[0]],[summary.bounds[3],summary.bounds[2]]],{padding:[18,18],maxZoom:13});
    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxNativeZoom:16,maxZoom:21,attribution:'Basemap © Esri, HERE, OpenStreetMap'}).addTo(cm);
    L.geoJSON(summary.boundary,{style:{color:'#316e9c',weight:2,fill:false,interactive:false}}).addTo(cm);
    const layers={parcel:L.geoJSON(null,{style:{color:'#55798d',weight:.7,fillColor:'#f6f9fa',fillOpacity:.35},onEachFeature:(f,l)=>l.on('click',()=>select(f.properties.id))}).addTo(cm),building:L.geoJSON(null,{style:{color:'#6f7780',weight:.6,fillColor:'#a7b2bb',fillOpacity:.35},onEachFeature:(f,l)=>l.on('click',()=>select(f.properties.id))}).addTo(cm),entrance:L.geoJSON(null,{pointToLayer:(f,ll)=>L.circleMarker(ll,{radius:4,color:'#fff',weight:1,fillColor:'#007ac2',fillOpacity:1}),onEachFeature:(f,l)=>l.on('click',()=>select(f.properties.id,true))}).addTo(cm)};
+   cm.createPane('cityOverview').style.zIndex='390';
+   // One canvas holds citywide outlines; avoid 82,434 Leaflet path objects.
+   const ParcelOverview=L.Layer.extend({
+    initialize(){this.features=[];},
+    onAdd(m){this.canvas=L.DomUtil.create('canvas','leaflet-layer city-parcel-overview');this.canvas.setAttribute('aria-hidden','true');this.canvas.style.pointerEvents='none';m.getPane('cityOverview').append(this.canvas);m.on('moveend resize',this.redraw,this);m.on('zoomstart',this.hide,this);this.redraw();},
+    onRemove(m){m.off('moveend resize',this.redraw,this);m.off('zoomstart',this.hide,this);this.canvas.remove();},
+    hide(){if(this.canvas)this.canvas.style.visibility='hidden';},
+    setFeatures(features){this.features=features;this.redraw();},
+    redraw(){
+     if(!this._map||!this.canvas)return;
+     const m=this._map,size=m.getSize(),ratio=Math.min(devicePixelRatio||1,2),ctx=this.canvas.getContext('2d');
+     this.canvas.width=Math.ceil(size.x*ratio);this.canvas.height=Math.ceil(size.y*ratio);this.canvas.style.width=size.x+'px';this.canvas.style.height=size.y+'px';this.canvas.style.visibility='visible';L.DomUtil.setPosition(this.canvas,m.containerPointToLayerPoint([0,0]));ctx.setTransform(ratio,0,0,ratio,0,0);ctx.lineWidth=.45;ctx.strokeStyle='rgba(75,110,130,.7)';ctx.fillStyle='rgba(247,250,252,.2)';ctx.beginPath();let count=0;
+     const paint=()=>{ctx.fill('evenodd');ctx.stroke();ctx.beginPath();};
+     for(const f of this.features){const polygons=f.geometry.type==='Polygon'?[f.geometry.coordinates]:f.geometry.coordinates;
+      for(const polygon of polygons)for(const ring of polygon){ring.forEach(([lng,lat],i)=>{const p=m.latLngToContainerPoint([lat,lng]);if(i===0)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y);});ctx.closePath();}
+      if(++count%1000===0)paint();
+     }paint();
+    }
+   });
+   const overviewLayer=new ParcelOverview().addTo(cm);
+   const parcelGroup=L.layerGroup([overviewLayer,layers.parcel]).addTo(cm);
+   let overviewFeatures=[];
    selectionLayer=L.geoJSON(null,{style:{color:'#007ac2',weight:3,fillColor:'#69b6e3',fillOpacity:.22},pointToLayer:(f,ll)=>L.circleMarker(ll,{radius:8,color:'#007ac2',weight:3,fillOpacity:.2}),interactive:false}).addTo(cm);
-   L.control.layers(null,{[t('Particelle · AdE','Parcels · AdE')]:layers.parcel,[t('Edifici · BDTRE','Buildings · BDTRE')]:layers.building,[t('Civici · Comune','Civics · Municipality')]:layers.entrance}).addTo(cm);
+   L.control.layers(null,{[t('Particelle · AdE','Parcels · AdE')]:parcelGroup,[t('Edifici · BDTRE','Buildings · BDTRE')]:layers.building,[t('Civici · Comune','Civics · Municipality')]:layers.entrance}).addTo(cm);
    cm.attributionControl.addAttribution('Catasto © Agenzia delle Entrate · BDTRE © Regione Piemonte · Civici © Città di Torino · CC BY 4.0');
-   async function view(){if(!cm||seq!==sequence)return;const v=++viewportSequence;const status=host.querySelector('#cityMapStatus');if(cm.getZoom()<16){Object.values(layers).forEach(l=>l.clearLayers());status.textContent=t('Ingrandisci a livello strada per caricare particelle, edifici e civici','Zoom to street level to load parcels, buildings and civics');return;}
-    status.textContent=t('Caricamento della vista…','Loading current view…');const bbox=cm.getBounds().toBBoxString();try{const sets=await Promise.all(Object.keys(layers).map(k=>get('/features?kind='+k+'&bbox='+bbox)));if(v!==viewportSequence||seq!==sequence||!cm)return;Object.keys(layers).forEach((k,i)=>{layers[k].clearLayers();layers[k].addData(sets[i]);});status.textContent=sets.some(s=>s.truncated||s.zoom_required)?t('Vista limitata: ingrandisci ancora per tutti gli elementi','View limited: zoom further for all features'):sets.map((s,i)=>`${n(s.features.length)} ${[t('particelle','parcels'),t('edifici','buildings'),t('civici','civics')][i]}`).join(' · ');}catch(err){if(v===viewportSequence)status.textContent=err.message;}}
+   async function view(){
+    if(!cm||seq!==sequence)return;
+    const v=++viewportSequence,status=host.querySelector('#cityMapStatus'),bbox=cm.getBounds().toBBoxString(),detail=cm.getZoom()>=16;
+    status.textContent=t('Caricamento delle particelle nella vista…','Loading parcel outlines in this view…');
+    try{
+     const [overview,sets]=await Promise.all([CityDataClient.overview(bbox),detail?Promise.all(Object.keys(layers).map(k=>get('/features?kind='+k+'&bbox='+bbox))):Promise.resolve(null)]);
+     if(v!==viewportSequence||seq!==sequence||!cm)return;
+     overviewFeatures=overview.features;overviewLayer.setFeatures(overview.features);
+     Object.keys(layers).forEach((k,i)=>{layers[k].clearLayers();if(sets)layers[k].addData(sets[i]);});
+     if(selectionLayer)selectionLayer.bringToFront();
+     const label=n(overview.features.length)+' '+t('particelle nella vista · panoramica generalizzata a 2 m','parcel outlines in view · generalized 2 m overview');
+     status.textContent=label+(sets&&!sets.some(s=>s.truncated||s.zoom_required)?' · '+n(sets[1].features.length)+' '+t('edifici','buildings')+' · '+n(sets[2].features.length)+' '+t('civici','civics'):' · '+t('ingrandisci per edifici e civici dettagliati','zoom for detailed buildings and civics'));
+    }catch(err){if(v===viewportSequence&&seq===sequence)status.textContent=err.message;}
+   }
    cm.on('moveend',view);view();
-   host.querySelector('#cityExtent').onclick=()=>cm.fitBounds([[summary.bounds[1],summary.bounds[0]],[summary.bounds[3],summary.bounds[2]]]);
+   cm.on('click',ev=>{
+    if(cm.getZoom()>=16)return;
+    const {lng,lat}=ev.latlng,point=turf.point([lng,lat]);
+    const matches=overviewFeatures.filter(f=>{const b=f.properties.bbox;return b[0]<=lng&&b[2]>=lng&&b[1]<=lat&&b[3]>=lat&&turf.booleanPointInPolygon(point,f);});
+    if(matches.length===1)select(matches[0].id);
+    else if(matches.length>1)host.querySelector('#cityInspector').innerHTML=`<h2>${t('Particelle sovrapposte nella panoramica','Overlapping overview parcels')}</h2><p>${t('Scegli un riferimento per vedere la geometria di fonte.','Choose a reference to inspect its source geometry.')}</p>${matches.map(f=>link(f.id,f.properties.title)).join('')}`;
+   });
+   const fit=(south,north)=>cm.fitBounds([[south,summary.bounds[0]],[north,summary.bounds[2]]],{padding:[18,18],maxZoom:16});
+   host.querySelector('#cityExtent').onclick=()=>fit(summary.bounds[1],summary.bounds[3]);
+   host.querySelector('#cityNorth').onclick=()=>fit((summary.bounds[1]+summary.bounds[3])/2,summary.bounds[3]);
+   host.querySelector('#citySouth').onclick=()=>fit(summary.bounds[1],(summary.bounds[1]+summary.bounds[3])/2);
    host.querySelector('#cityQuery').oninput=ev=>{state.query=ev.target.value;state.offset=0;clearTimeout(timer);timer=setTimeout(search,250);};
    host.querySelector('#cityKind').onchange=ev=>{state.kind=ev.target.value;state.offset=0;state.parcel='';search();};
    host.querySelector('#cityPrev').onclick=()=>{state.offset=Math.max(0,state.offset-50);search();};host.querySelector('#cityNext').onclick=()=>{state.offset+=50;search();};
