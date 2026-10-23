@@ -9,10 +9,10 @@ ROOT = Path(__file__).resolve().parents[1]
 DEST = ROOT / "dist"
 FILES = [
     "index.html", "styles.css", "workspace.css", "app.js", "workspace.js",
-    "energy-model.js", "registry-workspace.js", "registry.css", "identity-evidence.js", "parcel-identity.js", "investigation-view.js",
+    "energy-model.js", "registry-workspace.js", "registry.css", "identity-evidence.js", "parcel-identity.js", "investigation-view.js", "property-review-view.js", "property-workbench.js", "property-workbench.css", "city-workspace.js", "city-workspace.css", "city-data-client.js",
     "public-energy-model.js", "public-energy-workspace.js", "public-energy.css", ".nojekyll", "robots.txt", "sitemap.xml",
     "README.md", "HANDOFF.md", "DATA_REVIEW.md", "V2_ROADMAP.md", "RELEASES.md",
-    "PARCEL_DATA_PHASE.md", "V2_PROGRESS.md", "PUBLIC_ENERGY_PHASE.md", "ADDRESS_REFINEMENT_PHASE.md", "PROPERTY_VALIDATION_PHASE.md",
+    "PARCEL_DATA_PHASE.md", "V2_PROGRESS.md", "PUBLIC_ENERGY_PHASE.md", "ADDRESS_REFINEMENT_PHASE.md", "PROPERTY_VALIDATION_PHASE.md", "WHOLE_TORINO_PHASE.md", "PROPERTY_WORKSPACE_PHASE.md", "PROPERTY_REVIEW_PHASE.md",
     "data/investigation/summary.json",
     "vendor/leaflet.js", "vendor/turf.min.js", "vendor/jszip.min.js",
     "vendor/maplibre-gl.js", "vendor/maplibre-gl.css",
@@ -43,7 +43,9 @@ def publication_files():
     from check_public_investigation import check as check_investigation
     investigation=check_investigation(ROOT)
     print(f"Validated {len(parcels)} source-only parcel files", flush=True)
-    return FILES + [p.relative_to(ROOT).as_posix() for p in parcels+investigation]
+    from check_city_publication import check as check_city
+    city=check_city(ROOT)
+    return FILES + [p.relative_to(ROOT).as_posix() for p in parcels+investigation+city]
 
 
 def build():
@@ -67,7 +69,7 @@ def build():
     with ThreadPoolExecutor(max_workers=16) as pool:
         manifest = list(pool.map(copy, files))
     (DEST / "publication-manifest.json").write_text(
-        json.dumps({"version": "2.2.0", "files": manifest}, indent=2) + "\n", encoding="utf-8")
+        json.dumps({"version": "2.5.0", "files": manifest}, indent=2) + "\n", encoding="utf-8")
     print(f"Public artifact: {len(files)} reviewed files, {sum(f['bytes'] for f in manifest):,} bytes")
 
 

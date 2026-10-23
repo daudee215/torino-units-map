@@ -1,7 +1,7 @@
 /* Local v2 property evidence and relationship review. No company measurements. */
 "use strict";
 window.PropertyRegistry = (() => {
-  const state = {summary:null,addresses:null,investigation:null,investigationSummary:null,parcel:null,property:null,sequence:0,api:false,filters:{query:"",kind:"all",entrance:null}};
+  const state = {summary:null,addresses:null,investigation:null,investigationSummary:null,review:null,reviewSummary:null,legacy:false,parcel:null,property:null,sequence:0,api:false,filters:{query:"",kind:"all",entrance:null}};
   const local = ["localhost","127.0.0.1"].includes(location.hostname);
   const api = "http://127.0.0.1:8766";
   const label = (it,en) => tr(it,en);
@@ -34,6 +34,17 @@ window.PropertyRegistry = (() => {
     return json(`data/registry/parcels/${fp}.json`);
   }
   async function render(el) {
+    if(window.PropertyWorkbench&&!state.legacy){
+      try{
+        return await PropertyWorkbench.render(el,state.parcel||selected||'1175/434',{
+          advanced:fp=>{state.parcel=fp;state.legacy=true;render(el);},
+          context:(fp,id)=>{state.parcel=fp;state.property=id;},
+          map:fp=>{state.parcel=fp;setTab('map');if(lotByFp.has(fp))selectLot(fp,null,{fit:true});},
+          entrance:(id,fp)=>{const e=entById.get(String(id));if(e){state.parcel=fp;setTab('map');selectLot(fp,e.id,{fit:true});openStreet(e);}}
+        });
+      }catch(error){el.classList.remove('property-workbench-host');}
+    }
+    el.classList.remove('property-workbench-host');
     const sequence=++state.sequence;
     el.innerHTML=`<div class="empty">${label("Caricamento registro…","Loading property register…")}</div>`;
     try {
@@ -56,6 +67,13 @@ window.PropertyRegistry = (() => {
         try {
           const [details,investigationSummary]=await Promise.all([json('data/investigation/parcels/'+fp+'.json'),state.investigationSummary||json('data/investigation/summary.json')]);
           state.investigation=details;state.investigationSummary=investigationSummary;
+        }catch(_){}
+      }
+      state.review=null;
+      if(local){
+        try{
+          const [details,reviewSummary]=await Promise.all([json(api+'/api/property-review/'+fp,{signal:AbortSignal.timeout(5000)}),state.reviewSummary||json(api+'/api/property-review',{signal:AbortSignal.timeout(5000)})]);
+          state.review=details;state.reviewSummary=reviewSummary;
         }catch(_){}
       }
       if(sequence!==state.sequence)return;
@@ -85,6 +103,7 @@ window.PropertyRegistry = (() => {
       ${data.unresolved_certificates?.length?`<details class="registry-warning"><summary>${data.unresolved_certificates.length} ${label("APE non collegati: comune catastale assente","unlinked APEs: cadastral municipality absent")}</summary><p>${label("Questi record non sono attribuiti automaticamente a Torino e non entrano nel conteggio degli immobili.","These records are not automatically assigned to Torino and are excluded from property counts.")}</p><ul>${data.unresolved_certificates.map(x=>`<li>${safe(x.public_code)} · ${safe(x.address)} ${safe(x.civic)}</li>`).join('')}</ul></details>`:''}
       <section class="registry-roofs" id="registryRoofs"></section>`;
     const select=el.querySelector("#registryParcel");
+    if(local&&window.PropertyWorkbench){const back=document.createElement('button');back.type='button';back.className='btn outline';back.textContent=label('Torna allo spazio immobili','Back to property workspace');back.onclick=()=>{state.legacy=false;render(el);};el.querySelector('.registry-heading').append(back);}
     const sourceDownload=document.createElement('a');sourceDownload.className='btn outline';sourceDownload.href='data/download/torino_property_registry_v2.zip';sourceDownload.download='torino_property_registry_v2.zip';sourceDownload.textContent=label('Scarica registro fonti (CSV)','Download source register (CSV)');el.querySelector('.registry-toolbar').append(sourceDownload);
     const acquisition=document.createElement('p');acquisition.className='hint';
     acquisition.textContent=label(`Dettagli acquisiti: ${fmt(count.properties_with_reported_interior||0)} identità con interno riportato; ${fmt(count.targeted_parcel_queries||0)} ricerche catastali mirate. I limiti delle ricerche per via restano visibili.`,`Acquired detail: ${fmt(count.properties_with_reported_interior||0)} identities with a reported interior; ${fmt(count.targeted_parcel_queries||0)} targeted cadastral searches. Street-search cap warnings remain visible.`);
@@ -105,7 +124,7 @@ window.PropertyRegistry = (() => {
     el.querySelector("#registryExport").onclick=()=>downloadJSON(data,`property-evidence-${state.parcel.replace("/","-")}.json`);
     el.querySelectorAll("[data-property]").forEach(button=>button.onclick=()=>{state.property=button.dataset.property;draw(el,summary,data);});
     el.querySelectorAll('[data-alias-property]').forEach(button=>button.onclick=()=>{state.property=button.dataset.aliasProperty;draw(el,summary,data);});
-    el.querySelectorAll("[data-entrance]").forEach(button=>button.onclick=()=>{const e=entById.get(button.dataset.entrance);if(!e)return;setTab("map");selectLot(state.parcel,e.id,{fit:true});openStreet(e);});
+    el.querySelectorAll("[data-entrance],[data-review-entrance]").forEach(button=>button.onclick=()=>{const e=entById.get(button.dataset.entrance||button.dataset.reviewEntrance);if(!e)return;setTab("map");selectLot(state.parcel,e.id,{fit:true});openStreet(e);});
     el.querySelectorAll("[data-review]").forEach(button=>button.onclick=async()=>{
       button.disabled=true;
       try {
@@ -120,6 +139,10 @@ window.PropertyRegistry = (() => {
     const investigation=document.createElement('section');
     el.querySelector('#parcelIdentityDossier').after(investigation);
     InvestigationView.render(investigation,state.investigationSummary,state.investigation,data,fp=>{state.parcel=fp;state.property=null;state.filters={query:'',kind:'all',entrance:null};render(el);});
+    if(local&&window.PropertyReviewView&&state.review){
+      const review=document.createElement('section');investigation.after(review);
+      PropertyReviewView.render(review,state.reviewSummary,state.review,fp=>{state.parcel=fp;state.property=null;state.filters={query:'',kind:'all',entrance:null};render(el);});
+    }
     renderRoofs(el.querySelector("#registryRoofs"));
   }
   function propertyHtml(p,c,data){
@@ -130,7 +153,7 @@ window.PropertyRegistry = (() => {
       <p class="registry-warning">${label("La superficie riguarda l'oggetto attestato; non si duplica per subalterno. Piano e accesso non costituiscono una geometria interna.","Area belongs to the attested object and is not duplicated per subalterno. Floor and entrance do not establish interior geometry.")}</p>
       ${p.flags.length?`<ul class="registry-flags">${p.flags.map(f=>`<li>${safe(flagLabels[f]?translate(flagLabels[f]):f)}</li>`).join("")}</ul>`:""}
       <details><summary>${label("Identificatori catastali originali","Original cadastral identifiers")}</summary><ul>${p.members.map(m=>`<li>${safe(m[0])} · ${label("sezione","section")} ${safe(m[1]||label("non indicata","not reported"))} · ${safe(m[2])}/${safe(m[3])}/${safe(m[4]||"?")}</li>`).join("")}</ul></details>
-      ${InvestigationView.property(p,state.investigation)}<h3>${label("Collegamenti proposti · revisione","Proposed relationships · review")}</h3><p class="hint">${label("Una corrispondenza di indirizzo è una proposta; la vicinanza di un edificio non identifica l'appartamento. Accetta solo con evidenze aggiuntive.","An address match is a proposal; a nearby building does not identify the apartment. Accept only with additional evidence.")}</p>
+      ${InvestigationView.property(p,state.investigation)}${local&&window.PropertyReviewView?PropertyReviewView.property(p,state.review,data):''}<h3>${label("Collegamenti proposti · revisione","Proposed relationships · review")}</h3><p class="hint">${label("Una corrispondenza di indirizzo è una proposta; la vicinanza di un edificio non identifica l'appartamento. Accetta solo con evidenze aggiuntive.","An address match is a proposal; a nearby building does not identify the apartment. Accept only with additional evidence.")}</p>
       ${links.map(l=>linkHtml(l,data,p)).join("") || `<p>${label("Nessun collegamento candidato disponibile.","No candidate relationships available.")}</p>`}
       <h3>${label("Storico attestati e provenienza","Certificate history & provenance")}</h3>
       <div class="registry-certificates">${p.certificates.map(id=>certificateHtml(data.certificates.find(x=>x.id===id))).join("")}</div>`;
@@ -193,5 +216,5 @@ window.PropertyRegistry = (() => {
   }
   langBox.addEventListener('click',()=>{const labelEl=document.querySelector('#roofReferenceLabel');if(labelEl)labelEl.textContent=label('Campione altezze e indice LiDAR','Height sample & LiDAR index');});
   document.addEventListener("lotselected",e=>{state.parcel=e.detail.fp;state.property=null;state.filters={query:"",kind:"all",entrance:null};});
-  return {render,open(fp,property=null){state.parcel=fp;state.property=property;state.filters={query:"",kind:"all",entrance:null};setTab("registry");}};
+  return {render,open(fp,property=null){state.parcel=fp;state.property=property;state.legacy=false;window.PropertyWorkbench?.select(fp,property);state.filters={query:"",kind:"all",entrance:null};setTab("registry");}};
 })();

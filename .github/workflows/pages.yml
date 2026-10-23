@@ -21,8 +21,12 @@ jobs:
           node --check parcel-identity.js
           node --check identity-evidence.js
           node --check investigation-view.js
+          node --check city-data-client.js
+          node --check city-workspace.js
+          node --check property-workbench.js
           node scripts/check-energy.cjs
           node scripts/check-identity-evidence.cjs
+          node scripts/check-city-static.cjs
       - name: Build allowlisted public artifact
         run: python3 scripts/build_public_site.py
       - uses: actions/configure-pages@v5

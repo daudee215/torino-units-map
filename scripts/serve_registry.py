@@ -10,6 +10,8 @@ from pathlib import Path
 import re
 import sqlite3
 from urllib.parse import urlparse
+from workspace_api import get_workspace,save_case
+from city_api import get_city
 
 ROOT = Path(__file__).resolve().parents[1]
 DB = ROOT / "output/registry/properties.sqlite"
@@ -47,7 +49,16 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if not self.trusted_host():
             return self.answer(403,{"error":"Unapproved host"})
+        city=get_city(self.path)
+        if city:return self.answer(*city)
+        workspace=get_workspace(self.path)
+        if workspace:return self.answer(*workspace)
         path = urlparse(self.path).path
+        review_model = re.fullmatch(r'/api/property-review(?:/(\d+)/([0-9A-Za-z]+))?',path)
+        if review_model:
+            target=(ROOT/'output/property-review/parcels'/review_model[1]/(review_model[2]+'.json')) if review_model[1] else ROOT/'output/property-review/summary.json'
+            if not target.exists():return self.answer(404,{'error':'Property review not built for this parcel'})
+            return self.answer(200,json.loads(target.read_text(encoding='utf-8')))
         investigation = re.fullmatch(r'/api/investigation(?:/(\d+)/([0-9A-Za-z]+))?',path)
         if investigation:
             target=(ROOT/'output/investigation/parcels'/investigation[1]/(investigation[2]+'.json')) if investigation[1] else ROOT/'output/investigation/summary.json'
@@ -87,6 +98,15 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         if not self.trusted_host() or self.headers.get("Origin") not in ORIGINS:
             return self.answer(403,{"error":"Unapproved local origin or host"})
+        if urlparse(self.path).path=='/api/property-workspace/case':
+            try:
+                if self.headers.get('Content-Type','').split(';')[0]!='application/json':raise ValueError('Expected JSON')
+                length=int(self.headers.get('Content-Length',0))
+                if not 0<length<=12000:raise ValueError('Invalid request size')
+                data=json.loads(self.rfile.read(length))
+                if not isinstance(data,dict):raise ValueError('Expected an object')
+                return self.answer(200,save_case(data))
+            except (ValueError,TypeError,json.JSONDecodeError) as error:return self.answer(400,{'error':str(error)})
         if urlparse(self.path).path != "/api/review":
             return self.answer(404,{"error":"Unknown endpoint"})
         if not DB.exists():

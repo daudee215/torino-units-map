@@ -1,7 +1,7 @@
 /* Public-data energy workspace. Base GIS remains in app.js. */
 "use strict";
 const W = {
-  lang: "en", tab: "map", ready: false, census: null, solar: null, benchmark: null,
+  lang: "en", tab: (!location.hash||new URLSearchParams(location.search).has("city"))?"city":"map", ready: false, census: null, solar: null, benchmark: null,
   apes: null, grid: null, orientation: "south", scope: "lot", page: 0, sort: "id", direction: 1,
   tableLayer: "lots", tableText: "", tableView: false, tableField: "", tableMin: "",
   assumptions: { ...EnergyModel.defaults }, streetId: null, scene: null, pvShares: {},
@@ -34,10 +34,12 @@ for (const [name, icon] of [["units", "M3 18V3h14v15M7 7h2m2 0h2M7 11h2m2 0h2M8 
 TITLES.energy = "Energy scenarios"; TITLES.units = "Apartments & APE";
 
 function renderChrome() {
+  document.querySelector(".brand b").textContent=W.tab==="city"?tr("Atlante immobili Torino","Torino property atlas"):"Unità San Donato";
+  document.title=W.tab==="city"?tr("Atlante immobili · Torino","Property atlas · Torino"):"Unità San Donato · Torino";
   document.documentElement.lang = W.lang;
   $("map").setAttribute("aria-label",tr("Mappa dei lotti catastali","Cadastral parcel map"));
   if(document.documentElement.getAttribute("data-theme")!=="light")document.documentElement.setAttribute("data-theme", "light");
-  nav.innerHTML = `<div class="workspace-tabs" role="tablist">${[["map", "Mappa", "Map"], ["table", "Tabella attributi", "Attribute table"], ["registry", "Registro immobili", "Property register"], ["scene", "Scena 3D", "3D scene"], ["sources", "Dati e metodo", "Data & method"]].map(([k,it,en]) => `<button type="button" role="tab" data-tab="${k}" aria-selected="${W.tab === k}">${tr(it,en)}</button>`).join("")}</div><span class="workspace-meta"><span class="live-dot"></span>${tr("San Donato · area pilota di Torino", "San Donato · Torino pilot area")}</span>`;
+  nav.innerHTML = `<div class="workspace-tabs" role="tablist">${[["city","Tutta Torino","Whole Torino"],["map", "Mappa pilota", "Pilot map"], ["table", "Tabella pilota", "Pilot table"], ["registry", "Registro pilota", "Pilot register"], ["scene", "3D pilota", "Pilot 3D"], ["sources", "Fonti pilota", "Pilot sources"]].map(([k,it,en]) => `<button type="button" role="tab" data-tab="${k}" aria-selected="${W.tab === k}">${tr(it,en)}</button>`).join("")}</div><span class="workspace-meta"><span class="live-dot"></span>${W.tab==="city"?tr("Intero comune di Torino","Whole Torino municipality"):tr("San Donato · area pilota di Torino", "San Donato · Torino pilot area")}</span>`;
   langBox.innerHTML = ["it", "en"].map(l => `<button type="button" data-lang="${l}" aria-label="${l === "it" ? "Italiano" : "English"}" aria-pressed="${W.lang === l}">${l.toUpperCase()}</button>`).join("");
   if($("gridLabel"))$("gridLabel").textContent="GSE · "+tr("Aree cabine primarie 2025","Primary-substation areas 2025");
   document.querySelector(".brand span").textContent = tr("Torino · particelle, immobili e ingressi", "Torino · parcels, properties & entrances");
@@ -49,6 +51,7 @@ function renderChrome() {
   TITLES.energy = tr("Scenari energetici", "Energy scenarios"); TITLES.units = tr("Appartamenti e APE", "Apartments & APE");
   for (const k of ["units"]) { const b = document.querySelector(`[data-panel="${k}"]`); b.title = TITLES[k]; b.setAttribute("aria-label", TITLES[k]); }
   if(MODES.units2023){MODES.units2023.title=tr("Abitazioni stimate · ISTAT 2023","Estimated dwellings · ISTAT 2023");MODES.units2023.hint=tr("Abitazioni totali allocate da sezioni 2021 e conteggi 2023. Nessuna unità individuale inventata; sezioni di bordo escluse.","Total dwellings allocated from 2021 sections and 2023 counts. No individual units invented; boundary sections excluded.");MODES.units2023.none=tr("0 / allocazione non disponibile","0 / no allocation available");const b=$("modeUnits2023");if(b)b.textContent=tr("Abitazioni 2023 ≈","Dwellings 2023 ≈");if(mode==="units2023")renderLegend();}
+  footer.style.visibility=W.tab==="city"?"hidden":"";
   footer.innerHTML = `<span>${W.ready ? `${number(LOTS.length)} ${tr("lotti", "parcels")} · ${number(BLD.length)} ${tr("edifici", "buildings")} · ${number(ENTS.length)} ${tr("ingressi", "entrances")}` : tr("Caricamento GIS…", "Loading GIS…")}</span><span>${tr("Dati pubblici · particelle, immobili e ingressi", "Public data · parcel, property & entrance evidence")}</span>`;
   if (["energy", "units"].includes(panel)) $("panelTitle").textContent = TITLES[panel];
   translateBase();
@@ -58,8 +61,12 @@ nav.addEventListener("keydown", e => { if (!["ArrowLeft","ArrowRight","Home","En
 langBox.onclick = e => { const b=e.target.closest("[data-lang]"); if(!b)return; W.lang=b.dataset.lang; try {localStorage.setItem("torino-language",W.lang);} catch(_){} renderChrome(); renderDetailsIfSelected(); renderEnergy(); renderUnits(); if(W.tab!=="map")renderPage(); updateStreetLabels(); };
 document.querySelector(".actionbar").addEventListener("click", e => {const b=e.target.closest("[data-panel]");if(b?.dataset.panel==="units")renderUnits();});
 function setTab(name) {
+  if(W.tab==="city"&&name!=="city"){street.hidden=true;street.innerHTML="";W.streetId=null;}
   if(W.scene){W.scene.remove();W.scene=null;}
+  if(street.parentElement!==document.querySelector(".mapwrap"))document.querySelector(".mapwrap").append(street);
+  window.CityWorkspace?.deactivate();pageEl.classList.remove("city-workspace-host");
   pageEl.classList.toggle("scene-page",name==="scene");
+  if(name!=='registry'){pageEl.classList.remove('property-workbench-host');window.PropertyWorkbench?.deactivate();}
   if(drawing)stopDraw(); W.tab=name; document.querySelector(".shell").hidden=name!=="map"; pageEl.hidden=name==="map";
   renderChrome(); if(name!=="map") renderPage(); else setTimeout(()=>map.invalidateSize(),0);
 }
@@ -219,7 +226,7 @@ function renderTable(){
 function fieldLabel(k){const labels={id:["Identificatore","Identifier"],parcel:["Foglio / particella","Sheet / parcel"],dwellings:["Abitazioni 2023 ≈","Dwellings 2023 ≈"],households:["Famiglie 2023 ≈","Households 2023 ≈"],floors:["Piani","Floors"],area_m2:["Superficie m²","Area m²"],status:["Stato / metodo","Status / method"],address:["Indirizzo","Address"],bld_id:["ID edificio","Building ID"],subalterni:["Subalterni","Subalterni"],scope:["Ambito APE","APE scope"],floor:["Piano","Floor"],class:["Classe APE","APE class"],epgl_nren:["EPgl,nren kWh/m²a","EPgl,nren kWh/m²y"]};return labels[k]?tr(...labels[k]):k;}
 function showRawFeature(p,title){$("detEmpty").hidden=true;$("det").hidden=false;$("det").innerHTML=`<div class="block"><h3>${esc(title)}</h3><dl class="query-attrs">${Object.entries(p).map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v??"—")}</dd>`).join("")}</dl></div>`;openPanel("dettagli");}
 function showBuilding(o){const fp=o.p.foglio==null?null:`${o.p.foglio}/${o.p.particella}`;showRawFeature(o.p,tr("Attributi edificio","Building attributes"));const b=document.createElement("button");b.className="btn outline";b.type="button";b.textContent=tr("Apri il lotto collegato","Open linked parcel");b.disabled=!lotByFp.has(fp);b.onclick=()=>selectLot(fp,null,{fit:true});$("det").firstElementChild.append(b);map.fitBounds(o.layer.getBounds(),{maxZoom:19.5,padding:[40,40]});}
-function renderPage(){if(!W.ready){pageEl.innerHTML=`<div class="empty">${tr("Caricamento fonti…","Loading sources…")}</div>`;return;}if(W.tab==="table")renderTable();else if(W.tab==="sources")renderSources();else if(W.tab==="registry")window.PropertyRegistry?.render(pageEl);else if(W.tab==="public-energy")window.PublicEnergy?.render(pageEl);else if(W.tab==="scene")renderScene();}
+function renderPage(){document.querySelector(".shell").hidden=W.tab!=="map";pageEl.hidden=W.tab==="map";if(!W.ready){pageEl.innerHTML=`<div class="empty">${tr("Caricamento fonti…","Loading sources…")}</div>`;return;}if(W.tab==="city")window.CityWorkspace?.render(pageEl,{street,openStreet,pilot:()=>{const r=window.cityPilotRecord;window.PropertyRegistry?.open(r?.parcels?.find(fp=>lotByFp.has(fp))||selected||"1175/434",r?.pilot_record_available?r.id:undefined);}});else if(W.tab==="table")renderTable();else if(W.tab==="sources")renderSources();else if(W.tab==="registry")window.PropertyRegistry?.render(pageEl);else if(W.tab==="public-energy")window.PublicEnergy?.render(pageEl);else if(W.tab==="scene")renderScene();}
 
 let sceneLibrary;
 function loadSceneLibrary(){
