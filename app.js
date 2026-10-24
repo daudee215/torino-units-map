@@ -573,7 +573,7 @@ map.on("zoomend", syncLayers);
 
 /* ---------- load ---------- */
 renderLegend();
-(async function load() {
+async function loadPilotGIS() {
   try {
     META = await get("meta");
     const [lotti, strade] = await Promise.all([get("lotti"), get("strade")]);
@@ -629,8 +629,12 @@ renderLegend();
   } catch (err) {
     $("loading").hidden = false;
     $("loading").innerHTML = `<div class="card" style="padding:14px 16px;max-width:420px"><b>I dati non si sono caricati.</b><br>${esc(err.message)}.<br>Apri la pagina dal server locale (serve.bat, http://localhost:8765) e non come file.</div>`;
+    throw err;
   }
-})();
+ }
+let pilotLoadPromise=null;
+window.ensurePilotGIS=()=>pilotLoadPromise??=(loadPilotGIS().catch(error=>{pilotLoadPromise=null;throw error;}));
+// Legacy GIS is retained on demand; every public entry now opens the city atlas.
 
 function fillStats() {
   const P = LOTS.map((o) => o.p);

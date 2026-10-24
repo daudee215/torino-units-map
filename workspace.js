@@ -1,7 +1,7 @@
 /* Public-data energy workspace. Base GIS remains in app.js. */
 "use strict";
 const W = {
-  lang: "en", tab: new URLSearchParams(location.search).get("view")==="pilot"?"map":"city", ready: false, census: null, solar: null, benchmark: null,
+  lang: "en", tab: "city", ready: false, census: null, solar: null, benchmark: null,
   apes: null, grid: null, orientation: "south", scope: "lot", page: 0, sort: "id", direction: 1,
   tableLayer: "lots", tableText: "", tableView: false, tableField: "", tableMin: "",
   assumptions: { ...EnergyModel.defaults }, streetId: null, scene: null, pvShares: {},
@@ -40,7 +40,7 @@ function renderChrome() {
   document.documentElement.lang = W.lang;
   $("map").setAttribute("aria-label",tr("Mappa dei lotti catastali","Cadastral parcel map"));
   if(document.documentElement.getAttribute("data-theme")!=="light")document.documentElement.setAttribute("data-theme", "light");
-  nav.innerHTML = `<div class="workspace-tabs" role="tablist">${[["city","Tutta Torino","Whole Torino"],["map", "Mappa pilota", "Pilot map"], ["table", "Tabella pilota", "Pilot table"], ["registry", "Registro pilota", "Pilot register"], ["scene", "3D pilota", "Pilot 3D"], ["sources", "Fonti pilota", "Pilot sources"]].map(([k,it,en]) => `<button type="button" role="tab" data-tab="${k}" aria-selected="${W.tab === k}">${tr(it,en)}</button>`).join("")}</div><span class="workspace-meta"><span class="live-dot"></span>${W.tab==="city"?tr("Intero comune di Torino","Whole Torino municipality"):tr("San Donato · area pilota di Torino", "San Donato · Torino pilot area")}</span>`;
+  nav.innerHTML = `<div class="workspace-tabs" role="tablist"><button type="button" role="tab" data-tab="city" aria-selected="true">${tr("Tutta Torino","Whole Torino")}</button></div><span class="workspace-meta"><span class="live-dot"></span>${tr("Particelle → edifici → civici → immobili documentati","Parcels → buildings → civics → documented properties")}</span>`;
   langBox.innerHTML = ["it", "en"].map(l => `<button type="button" data-lang="${l}" aria-label="${l === "it" ? "Italiano" : "English"}" aria-pressed="${W.lang === l}">${l.toUpperCase()}</button>`).join("");
   if($("gridLabel"))$("gridLabel").textContent="GSE · "+tr("Aree cabine primarie 2025","Primary-substation areas 2025");
   document.querySelector(".brand span").textContent = tr("Torino · particelle, immobili e ingressi", "Torino · parcels, properties & entrances");
@@ -61,15 +61,17 @@ nav.addEventListener("click", e => { const b=e.target.closest("[data-tab]"); if 
 nav.addEventListener("keydown", e => { if (!["ArrowLeft","ArrowRight","Home","End"].includes(e.key)) return; const tabs=[...nav.querySelectorAll("[data-tab]")]; const current=tabs.indexOf(document.activeElement); if(current<0)return; e.preventDefault(); const i=e.key==="Home"?0:e.key==="End"?tabs.length-1:(current+(e.key==="ArrowRight"?1:-1)+tabs.length)%tabs.length;setTab(tabs[i].dataset.tab);nav.querySelectorAll("[data-tab]")[i].focus(); });
 langBox.onclick = e => { const b=e.target.closest("[data-lang]"); if(!b)return; W.lang=b.dataset.lang; try {localStorage.setItem("torino-language",W.lang);} catch(_){} renderChrome(); renderDetailsIfSelected(); renderEnergy(); renderUnits(); if(W.tab!=="map")renderPage(); updateStreetLabels(); };
 document.querySelector(".actionbar").addEventListener("click", e => {const b=e.target.closest("[data-panel]");if(b?.dataset.panel==="units")renderUnits();});
-function setTab(name) {
+async function setTab(name) {
   if(W.tab==="city"&&name!=="city"){street.hidden=true;street.innerHTML="";W.streetId=null;}
   if(W.scene){W.scene.remove();W.scene=null;}
   if(street.parentElement!==document.querySelector(".mapwrap"))document.querySelector(".mapwrap").append(street);
-  window.CityWorkspace?.deactivate();pageEl.classList.remove("city-workspace-host");
+  window.CityWorkspace?.deactivate();window.MunicipalExplorer?.deactivate();pageEl.classList.remove("city-workspace-host");
   pageEl.classList.toggle("scene-page",name==="scene");
   if(name!=='registry'){pageEl.classList.remove('property-workbench-host');window.PropertyWorkbench?.deactivate();}
   if(drawing)stopDraw(); W.tab=name; document.querySelector(".shell").hidden=name!=="map"; pageEl.hidden=name==="map";
-  renderChrome(); if(name!=="map") renderPage(); else setTimeout(()=>map.invalidateSize(),0);
+  renderChrome();
+  if(name!=="city"&&!W.ready){try{await window.ensurePilotGIS();await loadWorkspace();}catch(error){footer.textContent=error.message;footer.setAttribute('role','alert');return;}if(W.tab!==name)return;}
+  if(name!=="map") renderPage(); else setTimeout(()=>map.invalidateSize(),0);
 }
 function renderDetailsIfSelected(){ if(selected){renderDetails(lotByFp.get(selected),selEnt);augmentDetails();translateBase();} }
 
@@ -227,7 +229,7 @@ function renderTable(){
 function fieldLabel(k){const labels={id:["Identificatore","Identifier"],parcel:["Foglio / particella","Sheet / parcel"],dwellings:["Abitazioni 2023 ≈","Dwellings 2023 ≈"],households:["Famiglie 2023 ≈","Households 2023 ≈"],floors:["Piani","Floors"],area_m2:["Superficie m²","Area m²"],status:["Stato / metodo","Status / method"],address:["Indirizzo","Address"],bld_id:["ID edificio","Building ID"],subalterni:["Subalterni","Subalterni"],scope:["Ambito APE","APE scope"],floor:["Piano","Floor"],class:["Classe APE","APE class"],epgl_nren:["EPgl,nren kWh/m²a","EPgl,nren kWh/m²y"]};return labels[k]?tr(...labels[k]):k;}
 function showRawFeature(p,title){$("detEmpty").hidden=true;$("det").hidden=false;$("det").innerHTML=`<div class="block"><h3>${esc(title)}</h3><dl class="query-attrs">${Object.entries(p).map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v??"—")}</dd>`).join("")}</dl></div>`;openPanel("dettagli");}
 function showBuilding(o){const fp=o.p.foglio==null?null:`${o.p.foglio}/${o.p.particella}`;showRawFeature(o.p,tr("Attributi edificio","Building attributes"));const b=document.createElement("button");b.className="btn outline";b.type="button";b.textContent=tr("Apri il lotto collegato","Open linked parcel");b.disabled=!lotByFp.has(fp);b.onclick=()=>selectLot(fp,null,{fit:true});$("det").firstElementChild.append(b);map.fitBounds(o.layer.getBounds(),{maxZoom:19.5,padding:[40,40]});}
-function renderPage(){document.querySelector(".shell").hidden=W.tab!=="map";pageEl.hidden=W.tab==="map";if(!W.ready){pageEl.innerHTML=`<div class="empty">${tr("Caricamento fonti…","Loading sources…")}</div>`;return;}if(W.tab==="city")window.CityWorkspace?.render(pageEl,{street,openStreet,pilot:()=>{const r=window.cityPilotRecord;window.PropertyRegistry?.open(r?.parcels?.find(fp=>lotByFp.has(fp))||selected||"1175/434",r?.pilot_record_available?r.id:undefined);}});else if(W.tab==="table")renderTable();else if(W.tab==="sources")renderSources();else if(W.tab==="registry")window.PropertyRegistry?.render(pageEl);else if(W.tab==="public-energy")window.PublicEnergy?.render(pageEl);else if(W.tab==="scene")renderScene();}
+function renderPage(){document.querySelector(".shell").hidden=W.tab!=="map";pageEl.hidden=W.tab==="map";if(W.tab==="city"){window.CityWorkspace?.render(pageEl,{street,openStreet,pilot:async()=>{const r=window.cityPilotRecord;await window.ensurePilotGIS();await loadWorkspace();window.PropertyRegistry?.open(r?.parcels?.find(fp=>lotByFp.has(fp))||selected||"1175/434",r?.pilot_record_available?r.id:undefined);}});return;}if(!W.ready){pageEl.innerHTML=`<div class="empty">${tr("Caricamento fonti…","Loading sources…")}</div>`;return;}if(W.tab==="table")renderTable();else if(W.tab==="sources")renderSources();else if(W.tab==="registry")window.PropertyRegistry?.render(pageEl);else if(W.tab==="public-energy")window.PublicEnergy?.render(pageEl);else if(W.tab==="scene")renderScene();}
 
 let sceneLibrary;
 function loadSceneLibrary(){
@@ -297,7 +299,8 @@ function translateBase(){
 }
 new MutationObserver(()=>translateBase()).observe($("panel"),{childList:true,subtree:true});
 
-async function loadWorkspace(){
+let workspaceLoad=null;
+function loadWorkspace(){return workspaceLoad??=(async()=>{
   try{
     const getFile=async path=>{const r=await fetch(`data/${path}`);if(!r.ok)throw Error(`${path}: HTTP ${r.status}`);return r.json();};
     [W.census,W.solar,W.benchmark,W.apes,W.grid]=await Promise.all(["census2023.json","solar.json","demand_benchmark.json","ape_units.json","grid_areas.geojson"].map(getFile));
@@ -312,10 +315,10 @@ async function loadWorkspace(){
     const label=document.createElement("label");label.className="switch";label.innerHTML=`<span id="gridLabel">GSE · ${tr("Aree cabine primarie 2025","Primary-substation areas 2025")}</span><input type="checkbox" id="gridToggle">`;document.querySelector('[data-view="livelli"] .block').append(label);$("gridToggle").onchange=e=>e.target.checked?gridLayer.addTo(map):map.removeLayer(gridLayer);
     for(const ent of ENTS){const ll=ent.layer.getLatLng();ent.p.grid_areas_2025=W.grid.features.filter(f=>turf.booleanPointInPolygon([ll.lng,ll.lat],f)).map(f=>f.properties.COD_AC).join("; ");}
     W.ready=true;renderChrome();renderDetailsIfSelected();renderEnergy();renderUnits();if(W.tab!=="map")renderPage();
-  }catch(err){footer.textContent=tr("Impossibile caricare i nuovi dati: ","Unable to load added sources: ")+err.message;footer.setAttribute("role","alert");}
-}
-document.addEventListener("projectready",loadWorkspace,{once:true});
-if(BLD.length&&ENTS.length&&$("loading").hidden)loadWorkspace();
-renderChrome();
+  }catch(err){footer.textContent=tr("Impossibile caricare i nuovi dati: ","Unable to load added sources: ")+err.message;footer.setAttribute("role","alert");workspaceLoad=null;throw err;}
+})();}
+document.addEventListener("projectready",()=>loadWorkspace().catch(()=>{}),{once:true});
+if(BLD.length&&ENTS.length&&$("loading").hidden)loadWorkspace().catch(()=>{});
+renderChrome();if(W.tab==="city")renderPage();
 // Recompute layout after panel resizing and viewport changes, including mobile sheets.
 new ResizeObserver(()=>map.invalidateSize({pan:false})).observe(document.querySelector(".mapwrap"));

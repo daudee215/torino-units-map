@@ -10,7 +10,8 @@ const root=path.resolve(__dirname,'..');
  assert.equal(city.local,false);
  const workspace=await fs.readFile(path.join(root,'workspace.js'),'utf8');const init=workspace.slice(workspace.indexOf('const W ='),workspace.indexOf('try { W.lang'))+';W.tab';
  for(const hash of ['', '#lotto-1175-434'])assert.equal(vm.runInNewContext(init,{URLSearchParams,location:{search:'',hash},EnergyModel:{defaults:{}}}),'city');
- assert.equal(vm.runInNewContext(init,{URLSearchParams,location:{search:'?view=pilot',hash:'#lotto-1175-434'},EnergyModel:{defaults:{}}}),'map');
+ // Saved pilot links now land in the single municipal atlas, preserving source IDs.
+ assert.equal(vm.runInNewContext(init,{URLSearchParams,location:{search:'?view=pilot',hash:'#lotto-1175-434'},EnergyModel:{defaults:{}}}),'city');
  const summary=await city.get('');assert.equal(summary.version,'2.5.1');assert.equal(summary.counts.property_source_identities,226951);
  const overview=await city.overview('7.57,45.00,7.78,45.15');assert.equal(overview.features.length,82434);assert.equal(overview.simplification_m,2);
  const north=await city.overview('7.57,45.10,7.78,45.15'),south=await city.overview('7.57,45.00,7.78,45.04');assert(north.features.length>1000&&south.features.length>1000);
