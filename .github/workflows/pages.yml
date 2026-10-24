@@ -24,6 +24,10 @@ jobs:
           node --check city-data-client.js
           node --check city-workspace.js
           node --check property-workbench.js
+          node --check atlas-selections.js
+          node --check property-comparison.js
+          node scripts/check-atlas-selections.cjs
+          node scripts/check-property-comparison.cjs
           node --check municipal-explorer.js
           node --check municipal-data-client.js
           node --check connected-property-view.js
