@@ -1,8 +1,8 @@
 {
-  "version": "2.9.0",
+  "version": "2.13.0",
   "publication_authorized": true,
   "public_source_only": true,
-  "bytes": 690989506,
+  "bytes": 691048370,
   "files": [
     {
       "path": ".nojekyll",
@@ -20,9 +20,14 @@
       "sha256": "9d2c24605b3532686f73af66a8753eec4268fe05b670fcee9395e51b49fc4f20"
     },
     {
+      "path": "COMPARISON_CLARITY_PHASE.md",
+      "bytes": 3338,
+      "sha256": "d1cab93beb752922bc26e760ae44acf48b9bbca3716c53a1f87788101a8e483c"
+    },
+    {
       "path": "DATA_REVIEW.md",
-      "bytes": 15465,
-      "sha256": "f14f916336223332e2d4858f39e48d3c9c7dfcd036c3925e7eee2715f28ce23d"
+      "bytes": 16015,
+      "sha256": "07c9ba59fcec2f03059e26a2602cde5214376dee340b06a9cdfe3284fae6c111"
     },
     {
       "path": "EVIDENCE_DOSSIERS_PHASE.md",
@@ -31,8 +36,13 @@
     },
     {
       "path": "HANDOFF.md",
-      "bytes": 28763,
-      "sha256": "bc4723ae515ec8cf74bcc3c1970c1458eec462975c9e35d0e36fabc728e4c081"
+      "bytes": 29313,
+      "sha256": "b6b66b7a6eb141122c0ed0f923fe866ea1887124f3a5cf02480a78c5551b808b"
+    },
+    {
+      "path": "MAP_USABILITY_PHASE.md",
+      "bytes": 4134,
+      "sha256": "2a022b57320f5518f331263793c8124e419f818cbaa5c91a4c0e26d8935449fd"
     },
     {
       "path": "MUNICIPAL_CONNECTIONS_PHASE.md",
@@ -48,6 +58,11 @@
       "path": "PARCEL_DATA_PHASE.md",
       "bytes": 8392,
       "sha256": "43aee6a3da3c500bdc47c76055db3f996e430c4a7a5c08a62aaf9d4a31a7d2ab"
+    },
+    {
+      "path": "PROPERTY_COMPARISON_PHASE.md",
+      "bytes": 3569,
+      "sha256": "6c2a9bb60e9f5b453ed2dd3a8a6fd319ff68872a79b03047085e8b73bd27f24a"
     },
     {
       "path": "PROPERTY_REVIEW_PHASE.md",
@@ -71,13 +86,18 @@
     },
     {
       "path": "README.md",
-      "bytes": 14910,
-      "sha256": "012bc16fe58f68ddd89727532d97514045187e3dc362617fc52642c46a670df1"
+      "bytes": 15460,
+      "sha256": "f60f6b5200b8fa5bd729ec9d1c411ede5323e13f7fa03691d88ebccc6d7ed8b3"
+    },
+    {
+      "path": "RECORD_WORKSPACE_PHASE.md",
+      "bytes": 5011,
+      "sha256": "455559491f3e17ee219bce022f94e89230e395bf28de3a87755db2519941c4e8"
     },
     {
       "path": "RELEASES.md",
-      "bytes": 20563,
-      "sha256": "ebc98bee799fd19d6cfe0ca6181e354ebbbfce13cdf2342b9c3e1486822a60de"
+      "bytes": 21113,
+      "sha256": "bde288e864c451bb5e692de7ab3af157c0c4f2e58cf7f825f1736455443cbac3"
     },
     {
       "path": "UI_UX_PHASE.md",
@@ -91,8 +111,8 @@
     },
     {
       "path": "V2_ROADMAP.md",
-      "bytes": 12498,
-      "sha256": "8a272f0f868a73af01a4242a10c112ed8bdc20a488a23a19feb237e2948d8da3"
+      "bytes": 13048,
+      "sha256": "5796a1566b3743557cc973c8aff8eee3f869a260d356395b3fc175f9885c0f98"
     },
     {
       "path": "WHOLE_TORINO_PHASE.md",
@@ -103,6 +123,11 @@
       "path": "app.js",
       "bytes": 40344,
       "sha256": "4a486f09f82668197b31e2259e7e267c884c25b86a49ac7b711780768997f1a5"
+    },
+    {
+      "path": "atlas-selections.js",
+      "bytes": 1976,
+      "sha256": "3045664952f53566b716bfae51ecbf7f382d9b4401687f12053e2e6bd0ce22fe"
     },
     {
       "path": "city-data-client.js",
@@ -126,8 +151,8 @@
     },
     {
       "path": "connected-property-view.js",
-      "bytes": 17236,
-      "sha256": "2a0745b50542257c030188ce11f78666030c8027055dffd8371029a0e1433923"
+      "bytes": 18378,
+      "sha256": "dfcb98c6facd54c71ab20dc84d6d0c64da2b963ac848661a0df827c6d48bd61e"
     },
     {
       "path": "data/ape_units.json",
@@ -219686,8 +219711,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 13908,
-      "sha256": "4db4ea184af1acd6abefa87ff044fe05332a6001d0d8e9b2e3e82d0464eeb0ee"
+      "bytes": 14033,
+      "sha256": "a46e74fbb3e585d19fda2287011099710a8dcd44557e2b65b457bf1967480e05"
     },
     {
       "path": "investigation-view.js",
@@ -219701,13 +219726,13 @@
     },
     {
       "path": "municipal-explorer.css",
-      "bytes": 16567,
-      "sha256": "29c5a8881544b8912c6d5a46443c108ff18860a1f77014c10d0cb23376a1aa2e"
+      "bytes": 31084,
+      "sha256": "8a691719f4a42dd43ee6193552e2b6eb2e9d8a8c6104ab5d7156cfcd045601ee"
     },
     {
       "path": "municipal-explorer.js",
-      "bytes": 48296,
-      "sha256": "9f1f7e66bd326df5e895f14f5fed58f5b0aa103f233a8e36d777c5d238a8edc9"
+      "bytes": 60400,
+      "sha256": "e47e6520c7f2be8a113a1ed94c33d80bc9d864a5da280fb06dd9c38600265c8f"
     },
     {
       "path": "parcel-identity.js",
@@ -219718,6 +219743,11 @@
       "path": "parcel-overview.js",
       "bytes": 930,
       "sha256": "ed0aecf3d4a95bf9e457e24efe2800850b993ef4bef6f5c9a77495b52d197f97"
+    },
+    {
+      "path": "property-comparison.js",
+      "bytes": 10198,
+      "sha256": "bb10b0bd44c0e0907cbdb0cbfb2b88a08914c8b10b5b294519aa26b151e2ca67"
     },
     {
       "path": "property-evidence-cases.js",
