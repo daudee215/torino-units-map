@@ -1,77 +1,34 @@
-"""Build a reviewed public Pages artifact, never the entire workspace."""
-import hashlib
-import json
+"""Reproduce the authorized Pages artifact from hash-pinned public inputs only."""
 from pathlib import Path
-import shutil
 from concurrent.futures import ThreadPoolExecutor
+import hashlib,json,shutil
+ROOT=Path(__file__).resolve().parents[1]
 
-ROOT = Path(__file__).resolve().parents[1]
-DEST = ROOT / "dist"
-FILES = [
-    "index.html", "styles.css", "workspace.css", "app.js", "workspace.js",
-    "energy-model.js", "registry-workspace.js", "registry.css", "identity-evidence.js", "parcel-identity.js", "investigation-view.js", "property-review-view.js", "property-workbench.js", "property-workbench.css", "city-workspace.js", "city-workspace.css", "city-data-client.js",
-    "public-energy-model.js", "public-energy-workspace.js", "public-energy.css", ".nojekyll", "robots.txt", "sitemap.xml",
-    "README.md", "HANDOFF.md", "DATA_REVIEW.md", "V2_ROADMAP.md", "RELEASES.md",
-    "PARCEL_DATA_PHASE.md", "V2_PROGRESS.md", "PUBLIC_ENERGY_PHASE.md", "ADDRESS_REFINEMENT_PHASE.md", "PROPERTY_VALIDATION_PHASE.md", "WHOLE_TORINO_PHASE.md", "PROPERTY_WORKSPACE_PHASE.md", "PROPERTY_REVIEW_PHASE.md",
-    "data/investigation/summary.json",
-    "vendor/leaflet.js", "vendor/turf.min.js", "vendor/jszip.min.js",
-    "vendor/maplibre-gl.js", "vendor/maplibre-gl.css",
-    "data/meta.json", "data/lotti.json", "data/edifici.json", "data/ingressi.json",
-    "data/sezioni.json", "data/strade.json", "data/census2023.json",
-    "data/census2023.geojson", "data/ape_units.json", "data/demand_benchmark.json",
-    "data/grid_areas.geojson", "data/solar.json",
-    "data/roof_evidence.json", "data/public_demand_profiles.json", "data/solar_weather_2023.json", "data/torino_energy_context.json",
-    "data/registry/summary.json", "data/download/torino_property_registry_v2.zip",
-    "data/download/torino_sandonato_dati.zip", "data/download/torino_sandonato_energy.zip",
-]
-
-
-def publication_files():
-    # A bounded source read model, not the local database or acquisition caches.
-    parcels = sorted((ROOT / "data/registry/parcels").glob("*/*.json"))
-    summary = json.loads((ROOT / "data/registry/summary.json").read_text(encoding="utf-8"))
-    assert len(parcels) == summary["counts"]["parcels"], "Incomplete parcel read model"
-    def check(path):
-        data = json.loads(path.read_text(encoding="utf-8"))
-        assert all("review" not in link for link in data["links"]), "Local review data in static source model"
-        addresses=data.get('address_evidence')
-        assert addresses and addresses['local_only'] is False, 'Missing reviewed static address evidence'
-        assert set(addresses['entrances'])=={str(e['COD_CIVICO']) for e in data['entrances']}
-        assert len(addresses['attribution'])==3
-    with ThreadPoolExecutor(max_workers=16) as pool:
-        list(pool.map(check, parcels))
-    from check_public_investigation import check as check_investigation
-    investigation=check_investigation(ROOT)
-    print(f"Validated {len(parcels)} source-only parcel files", flush=True)
-    from check_city_publication import check as check_city
-    city=check_city(ROOT)
-    return FILES + [p.relative_to(ROOT).as_posix() for p in parcels+investigation+city]
-
+def inputs():
+ m=json.loads((ROOT/'release-files.json').read_text(encoding='utf8'))
+ assert m['version']=='2.9.0' and m['publication_authorized'] and m['public_source_only']
+ assert len({r['path'] for r in m['files']})==len(m['files'])
+ assert sum(r['bytes'] for r in m['files'])==m['bytes']<900*1024**2
+ def verify(r):
+  name=r['path'];p=ROOT/name
+  assert not Path(name).is_absolute() and '..' not in Path(name).parts
+  assert not set(Path(name).parts)&{'_raw','output','.git','dist','__pycache__','node_modules'}
+  assert not name.endswith(('.pdf','.sqlite','.db','.gpkg','.pyc','.env'))
+  assert p.is_file() and not p.is_symlink() and p.resolve().is_relative_to(ROOT.resolve())
+  raw=p.read_bytes();assert len(raw)==r['bytes'] and hashlib.sha256(raw).hexdigest()==r['sha256'],name
+  return r
+ with ThreadPoolExecutor(max_workers=12) as pool:list(pool.map(verify,m['files']))
+ return m
 
 def build():
-    assert DEST.resolve() == ROOT.resolve() / "dist", "Unexpected publication directory"
-    if DEST.exists():
-        if DEST.is_symlink():
-            raise ValueError("Publication directory must not be a symlink")
-        shutil.rmtree(DEST)
-    DEST.mkdir()
-    manifest = []
-    files = publication_files()
-    def copy(relative):
-        source = ROOT / relative
-        assert source.is_file() and not source.is_symlink(), relative
-        assert source.resolve().is_relative_to(ROOT.resolve()), relative
-        target = DEST / relative
-        target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(source, target)
-        return {"path": relative, "bytes": target.stat().st_size,
-                "sha256": hashlib.sha256(target.read_bytes()).hexdigest()}
-    with ThreadPoolExecutor(max_workers=16) as pool:
-        manifest = list(pool.map(copy, files))
-    (DEST / "publication-manifest.json").write_text(
-        json.dumps({"version": "2.5.1", "files": manifest}, indent=2) + "\n", encoding="utf-8")
-    print(f"Public artifact: {len(files)} reviewed files, {sum(f['bytes'] for f in manifest):,} bytes")
+ m=inputs();dest=ROOT/'dist'
+ assert dest.resolve()==ROOT.resolve()/'dist' and not dest.is_symlink()
+ if dest.exists():shutil.rmtree(dest)
+ dest.mkdir()
+ def copy(r):
+  p=dest/r['path'];p.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(ROOT/r['path'],p)
+ with ThreadPoolExecutor(max_workers=12) as pool:list(pool.map(copy,m['files']))
+ (dest/'publication-manifest.json').write_text(json.dumps(m,indent=2)+'\n',encoding='utf8')
+ print(f"Public 2.9.0: {len(m['files']):,} reviewed files / {m['bytes']:,} bytes",flush=True)
 
-
-if __name__ == "__main__":
-    build()
+if __name__=='__main__':build()
