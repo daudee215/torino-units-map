@@ -5,6 +5,7 @@ const fs=require('node:fs/promises'),path=require('node:path'),vm=require('node:
  let stored='[]',fail=false;
  const sandbox={window:{},URL,location:{href:'https://example.github.io/torino-units-map/?release=2.10.0'},localStorage:{getItem:()=>stored,setItem:(k,v)=>{if(fail)throw Error('Storage unavailable');stored=v;}}};
  vm.createContext(sandbox);vm.runInContext(source,sandbox);const a=sandbox.window.AtlasSelections;
+ assert.equal(a.initialRecord('#record=municipal-key%3A2e13c5315ddb640270b2ff2e'),'municipal-key:2e13c5315ddb640270b2ff2e');
  const record={id:'cadastre:L219_128200.94',title:'1282/94',kind:'parcel',geometry:{type:'Polygon'},review:'must not persist'};
  assert(a.toggle(record).persistent);assert(a.isSaved(record.id));assert.deepEqual(Object.keys(JSON.parse(stored)[0]).sort(),['id','kind','title']);
  const url=a.recordURL(record.id);assert.equal(new URL(url).pathname,'/torino-units-map/');assert.equal(a.initialRecord(new URL(url).hash),record.id);

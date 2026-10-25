@@ -1,0 +1,28 @@
+{
+  "version": "2.15.0-dev.1",
+  "built": "2026-10-25T06:27:05.681049+00:00",
+  "local_only": false,
+  "reviewed_for_publication": true,
+  "source_identities": 226951,
+  "cartographic_parcels": 82434,
+  "issue_counts": {
+    "no_entrance": 98397,
+    "address_only": 70578,
+    "group_scope": 4913,
+    "incomplete_identity": 1742,
+    "multiple_or_changed": 137
+  },
+  "queue_page_size": 100,
+  "largest_parcel": {
+    "id": "cadastre:L219_138700.1",
+    "fp": "1387/1",
+    "properties": 738
+  },
+  "rules": [
+    "Entire acquired parcel set searched; certificate observations are retained.",
+    "Issue categories are investigation prompts, not accuracy scores or verified errors.",
+    "Document key candidates do not establish section equivalence or current access.",
+    "Grouped properties remain single source objects; no apartment allocations."
+  ],
+  "public_source_only": true
+}
