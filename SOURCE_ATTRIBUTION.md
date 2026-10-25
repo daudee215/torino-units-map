@@ -1,4 +1,4 @@
-# Additional source attribution — 2.15.0
+# Additional source attribution — 2.16.0
 
 Reviewed 25 October 2026. This release adds derived source observations and factual summaries to the previously published city, municipal and pilot catalogues. Source publishers do not endorse this project. Original sources have different dates and scopes; joins and derived context are project transformations, not publisher-verified entrance or property equivalence.
 
@@ -13,3 +13,11 @@ Reviewed 25 October 2026. This release adds derived source observations and fact
 Property investigation shards are project-derived source-only indexes of previously acquired cadastral identities, certificate observations, municipal inventory references and candidate civics. Original source URLs remain attached to dated observations/inventory references; previously published attribution continues to apply. No energy allocation, ownership, tenancy, company data or private review information is introduced.
 
 Original records/groups remain unsplit. Property counts are not verified apartment counts. Current legal entrances and individual apartment positions remain unverified. Source differences are investigation prompts, not accuracy scores or evidence of a completed cadastral/building change.
+
+## Access and navigation additions in 2.16.0
+
+Regione Piemonte / CSI Piemonte — BDTRE 2026 (31 March 2026 edition), [official dataset and CC BY 4.0 use constraints](https://www.geoportale.piemonte.it/geonetwork/srv/api/records/r_piemon:da9b12ba-866a-4f0f-8704-5b7b753e4f15), [licence](https://creativecommons.org/licenses/by/4.0/). Project-derived comparisons of the acquired exterior and internal access views retain source IDs, source dates, reported access types and full-address/distance methods. Raw GeoPackages and raw access geometry are not redistributed. Civic coordinates already published in the municipal catalogue are retained. Internal-access class is not an apartment or staircase identification; companion views may share production/coordinates and are not independent confirmation.
+
+Civic-to-parcel navigation combines unchanged source-property address observations with separately labelled BDTRE/municipal point intersections. The first evidence level with exactly one candidate opens that candidate; several require a choice. No nearest-parcel assignment, cadastral repair, legal access or accuracy score is inferred. All 6,819 unlocated source identities retain their full original keys and scopes; field hypotheses remain separate from civic-point context.
+
+Documentary access/asset role tags summarize the previously reviewed 22 source subjects (including two land controls), with original links, dates/pages and full reported member keys. Stair evidence for an apartment is not transferred to its garage; a courtyard asset is not automatically a route. No raw document/plan/image is republished. Class definitions are linked to the [official national catalogue, page 221](https://geodati.gov.it/geoportale/images/Specifica_GdL2_09-05-2016.pdf#page=221); the PDF itself is not included.
