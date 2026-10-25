@@ -49,6 +49,11 @@ jobs:
           node scripts/check-property-investigation.cjs
           node scripts/check-refinement-evidence.cjs
           node scripts/check-atlas-render-cache.cjs
+      - name: Validate civic-to-parcel navigation and access sources
+        run: |
+          node --check access-resolution.js
+          python3 scripts/check_access_publication.py
+          node scripts/check-access-resolution.cjs
       - name: Build allowlisted public artifact
         run: python3 scripts/build_public_site.py
       - uses: actions/configure-pages@v5

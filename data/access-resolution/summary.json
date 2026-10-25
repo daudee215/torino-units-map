@@ -1,0 +1,42 @@
+{
+  "version": "2.16.0",
+  "built": "2026-10-25T07:07:34.101980+00:00",
+  "local_only": false,
+  "reviewed_for_publication": true,
+  "civics": 119108,
+  "parcels": 82434,
+  "unmapped_source_identities": 6819,
+  "reasons": {
+    "sheet_not_acquired": 5471,
+    "parcel_not_acquired": 1304,
+    "complex_reference": 44
+  },
+  "signals": {
+    "address_context_records": 1719,
+    "reference_hypothesis_records": 44,
+    "incomplete_records": 245
+  },
+  "access_sources": {
+    "source_vehicle_access": 36490,
+    "source_external_direct": 82296,
+    "source_unknown": 52,
+    "source_internal_access_record": 118879,
+    "civics_with_access_source": 102521,
+    "civics_with_multiple_external_roles": 0
+  },
+  "distance_bound_m": 20,
+  "source_identity_changes": 0,
+  "current_access_confirmed": false,
+  "limits": [
+    "Access classes are reported BDTRE observations, not verified pedestrian doors or legal routes.",
+    "Companion BDTRE tables can share production and coordinates; not independent confirmation.",
+    "Internal access record does not identify a staircase or apartment.",
+    "Reference hypotheses and address-point context never replace missing parcel membership."
+  ],
+  "civic_navigation": {
+    "civics_with_property_parcel_evidence": 27429,
+    "civics_with_access_point_parcels": 102473
+  },
+  "navigation_rule": "Unique property-address parcel first; otherwise unique numeric BDTRE point parcel; otherwise unique numeric municipal-point parcel. Multiple candidates at the chosen evidence level require an explicit choice. No nearest-parcel assignment.",
+  "public_source_only": true
+}
