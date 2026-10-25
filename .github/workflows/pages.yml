@@ -41,6 +41,14 @@ jobs:
           node scripts/check-evidence-labels.cjs
       - name: Validate source-only city, municipal and evidence release
         run: python3 scripts/check_atlas_release_sources.py
+      - name: Validate additional source context and investigation
+        run: |
+          python3 scripts/check_property_release.py
+          node --check property-investigation.js
+          node --check refinement-evidence.js
+          node scripts/check-property-investigation.cjs
+          node scripts/check-refinement-evidence.cjs
+          node scripts/check-atlas-render-cache.cjs
       - name: Build allowlisted public artifact
         run: python3 scripts/build_public_site.py
       - uses: actions/configure-pages@v5

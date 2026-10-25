@@ -2,7 +2,7 @@
 window.AtlasSelections=(()=>{
  const key='torino-atlas-saved-v1',limit=50;
  let memory=[],sessionOnly=false;
- const validId=id=>typeof id==='string'&&id.length<=250&&/^(?:municipal|cadastre|civic|property|bdtre):[A-Za-z0-9_:.\/-]+$/.test(id);
+ const validId=id=>typeof id==='string'&&id.length<=250&&/^(?:municipal|municipal-key|cadastre|civic|property|bdtre):[A-Za-z0-9_:.\/-]+$/.test(id);
  function clean(rows){const seen=new Set();return (Array.isArray(rows)?rows:[]).filter(r=>r&&validId(r.id)&&typeof r.title==='string'&&!seen.has(r.id)&&seen.add(r.id)).slice(0,limit).map(r=>({id:r.id,title:r.title.replace(/[\u0000-\u001f\u007f]/g,'').slice(0,180),kind:typeof r.kind==='string'&&/^[a-z_]{1,30}$/.test(r.kind)?r.kind:''}));}
  function items(){if(!sessionOnly){try{memory=clean(JSON.parse(localStorage.getItem(key)||'[]'));}catch(_){sessionOnly=true;}}return memory.map(r=>({...r}));}
  function write(rows){memory=clean(rows);if(!sessionOnly){try{localStorage.setItem(key,JSON.stringify(memory));}catch(_){sessionOnly=true;}}return !sessionOnly;}

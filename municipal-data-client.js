@@ -3,7 +3,7 @@ window.MunicipalDataClient=(()=>{
  const params=new URLSearchParams(location.search),local=CityDataClient.local&&!params.has('staticMunicipal');
  const base=params.has('staticMunicipal')&&['localhost','127.0.0.1'].includes(location.hostname)?'output/municipal-static/':'data/municipal/';
  const cache=new Map(),enc=new TextEncoder();let summaryPromise;
- async function load(path){if(cache.has(path))return cache.get(path);const p=fetch(base+path+'?v=2.8.0-dev.1').then(async r=>{if(r.status===404)return null;if(!r.ok)throw Error('Municipal source shard unavailable');return path.endsWith('.gz')?new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).json():r.json();}).catch(e=>{cache.delete(path);throw e;});cache.set(path,p);if(cache.size>120)cache.delete(cache.keys().next().value);return p;}
+ async function load(path){if(cache.has(path))return cache.get(path);const p=fetch(base+path+'?v=2.8.0-dev.1',{cache:params.has('diagnosticsCold')?'reload':'default'}).then(async r=>{if(r.status===404)return null;if(!r.ok)throw Error('Municipal source shard unavailable');return path.endsWith('.gz')?new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).json():r.json();}).catch(e=>{cache.delete(path);throw e;});cache.set(path,p);if(cache.size>120)cache.delete(cache.keys().next().value);return p;}
  async function bucket(id){return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',enc.encode(id))),b=>b.toString(16).padStart(2,'0')).join('').slice(0,3);}
  const words=s=>s.toLowerCase().normalize('NFD').replace(/\p{M}/gu,'').match(/[\p{L}\p{N}]+/gu)||[];
  const hex=s=>Array.from(enc.encode(s),b=>b.toString(16).padStart(2,'0')).join('');

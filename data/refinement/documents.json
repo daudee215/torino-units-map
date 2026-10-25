@@ -1,0 +1,478 @@
+{
+  "version": "2.15.0-dev.1",
+  "cases": [
+    {
+      "id": "cigna-cervino-2025",
+      "title": "Via Cigna / Via Cervino",
+      "year": 2025,
+      "zone": "north",
+      "parcels": [
+        "1150/64"
+      ],
+      "members": [
+        "4",
+        "6",
+        "7",
+        "8",
+        "10",
+        "169",
+        "171"
+      ],
+      "sheet": "1150",
+      "parcel": "64",
+      "identity_page": 3,
+      "access_page": 3,
+      "scope": "documented_complex",
+      "summary_it": "Il documento riporta sette subalterni: comprende locali commerciali, cabina elettrica e un bene comune non censibile. Gli indirizzi catastali elencati non certificano le porte attuali.",
+      "summary_en": "The document reports seven subalterni including commercial premises, an electrical cabin and a common non-assessable asset. Listed cadastral addresses do not verify present doorways.",
+      "access_it": "Pagina 3: indirizzi catastali distinti su via Cervino e via Cigna. Nessuna assegnazione automatica a civici comunali.",
+      "access_en": "Page 3 lists distinct cadastral addresses on Via Cervino and Via Cigna. No automatic municipal civic assignment.",
+      "facts": [
+        {
+          "sub": "6",
+          "address": "Via Cervino 29/A",
+          "floor": "T-1"
+        },
+        {
+          "sub": "7",
+          "address": "Via Cervino 23",
+          "floor": "T-1"
+        },
+        {
+          "sub": "8",
+          "address": "Via Cervino 21/A",
+          "floor": "T"
+        },
+        {
+          "sub": "10",
+          "address": "Via Cigna Francesco 108/A",
+          "floor": "T"
+        },
+        {
+          "sub": "169",
+          "address": "Via Cigna Francesco 100/A, 102/A",
+          "floor": "T-1"
+        },
+        {
+          "sub": "171",
+          "address": "Via Cervino 21/A",
+          "floor": "T",
+          "kind": "common_non_assessable"
+        }
+      ],
+      "source_url": "https://bandi.comune.torino.it/sites/default/files/allegati/bandi/2025/2922/ALLEGATO%201%20-%20Scheda%20Tecnico-Patrimoniale%20Compendio%20via%20Cigna_via%20Cervino.pdf",
+      "source_sha256": "d87ea79274fea361c111c798f7b34363d57507195bc46204575dea3f3dd3841e",
+      "date_basis": "procedure year, not verified document issue date",
+      "current_access_confirmed": false,
+      "section_confirmed": false,
+      "cartographic_candidates": [
+        {
+          "id": "cadastre:L219_115000.64",
+          "title": "1150/64"
+        }
+      ]
+    },
+    {
+      "id": "plava75-2025",
+      "title": "Via Plava 75",
+      "year": 2025,
+      "zone": "south",
+      "parcels": [
+        "1464/262"
+      ],
+      "land_context": [
+        "1464/271 (part)"
+      ],
+      "members": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "sheet": "1464",
+      "parcel": "262",
+      "identity_page": 2,
+      "access_page": 1,
+      "scope": "documented_complex",
+      "summary_it": "Complesso socio-assistenziale con quattro subalterni riportati. Il documento segnala un aggiornamento catastale in corso: non è prova di variazione completata.",
+      "summary_en": "Care-facility complex with four reported subalterni. The document states cadastral updating is in progress; it does not establish a completed change.",
+      "access_it": "Via Plava 75 è l’indirizzo del complesso. La descrizione dei locali non identifica un ingresso per ogni subalterno.",
+      "access_en": "Via Plava 75 is the complex address. The premises description does not identify an entrance for each subalterno.",
+      "facts": [
+        {
+          "sub": "1",
+          "floor": "S1-T",
+          "kind": "common_non_assessable"
+        },
+        {
+          "sub": "2",
+          "floor": "S1-T-1-2-3-4"
+        },
+        {
+          "sub": "3",
+          "floor": "S1"
+        },
+        {
+          "sub": "4",
+          "floor": "S1"
+        }
+      ],
+      "source_url": "https://bandi.comune.torino.it/sites/default/files/allegati/bandi/2025/3126/Allegato_1_Via%20Plava%2075_Scheda_Tecnico_Patrimoniale.pdf",
+      "source_sha256": "7ea3c1f3a7dba75ede5dcb7af47ae543fbb0daca6090b13d41740507489c697d",
+      "date_basis": "procedure year, not verified document issue date",
+      "current_access_confirmed": false,
+      "section_confirmed": false,
+      "cartographic_candidates": [
+        {
+          "id": "cadastre:L219_146400.262",
+          "title": "1464/262"
+        }
+      ]
+    },
+    {
+      "id": "po18i-2023",
+      "title": "Via Po 18/I",
+      "year": 2023,
+      "zone": "centre",
+      "parcels": [
+        "1280/85"
+      ],
+      "members": [
+        "6"
+      ],
+      "sheet": "1280",
+      "parcel": "85",
+      "identity_page": 2,
+      "access_page": 1,
+      "scope": "documented_property",
+      "summary_it": "Locale commerciale 1280/85/6. La pagina 2 riporta piano S1-T-1 e superficie catastale 201 m²; non si tratta di superficie riscaldata.",
+      "summary_en": "Commercial property 1280/85/6. Page 2 reports floor S1-T-1 and cadastral area 201 m²; this is not heated area.",
+      "access_it": "Pagina 1: accesso dai portici di via Po. Pagina 2: cantina raggiungibile dal corridoio comune tramite scala; percorso storico da verificare oggi.",
+      "access_en": "Page 1 describes access from the Via Po arcade. Page 2 describes cellar access through a common corridor and stair; present access remains unverified.",
+      "facts": [
+        {
+          "sub": "6",
+          "address": "Via Po 18 Interno I",
+          "floor": "S1-T-1",
+          "cadastral_area_m2": 201
+        }
+      ],
+      "source_url": "https://risorse.comune.torino.it/comunevende/bm~doc/31_2023_allegato_2_lotto_2_scheda_tecnico_patrimoniale_po18_i.pdf",
+      "source_sha256": "a4b403af65e75b8f2db75b8163bfef61f56bf0977ad9c4302127b08e41d1430d",
+      "date_basis": "procedure year, not verified document issue date",
+      "current_access_confirmed": false,
+      "section_confirmed": false,
+      "cartographic_candidates": [
+        {
+          "id": "cadastre:L219_128000.85",
+          "title": "1280/85"
+        }
+      ]
+    },
+    {
+      "id": "rossana24-2024",
+      "title": "Via Rossana 24",
+      "year": 2024,
+      "zone": "west",
+      "parcels": [
+        "1289/135"
+      ],
+      "members": [
+        "15",
+        "16",
+        "17",
+        "18"
+      ],
+      "sheet": "1289",
+      "parcel": "135",
+      "identity_page": 2,
+      "access_page": 1,
+      "scope": "documented_group",
+      "summary_it": "Il subalterno 18 riguarda i locali; 15, 16 e 17 sono porzioni di cortile. Il gruppo non rappresenta quattro appartamenti.",
+      "summary_en": "Subalterno 18 describes the premises; 15, 16 and 17 are courtyard portions. The group does not represent four apartments.",
+      "access_it": "Pagina 1: per i locali del subalterno 18 sono descritti accessi dalla strada, dal vano scala e dal corridoio cantine. Non estesi alle porzioni di cortile.",
+      "access_en": "Page 1 describes street, stairwell and cellar-corridor routes for the subalterno 18 premises. These are not extended to courtyard portions.",
+      "facts": [
+        {
+          "sub": "15",
+          "floor": "T",
+          "kind": "courtyard"
+        },
+        {
+          "sub": "16",
+          "floor": "T",
+          "kind": "courtyard"
+        },
+        {
+          "sub": "17",
+          "floor": "T",
+          "kind": "courtyard"
+        },
+        {
+          "sub": "18",
+          "floor": "S1-T",
+          "cadastral_area_m2": 90
+        }
+      ],
+      "source_url": "https://risorse.comune.torino.it/comuneaffitta/bm~doc/5_2024_allegato_1_scheda_tecnico_patrimoniale_rossana_24.pdf",
+      "source_sha256": "1f1a7b04725a3f3b71e58eb567158819f7536300a4549dbda545c384924e2d05",
+      "date_basis": "procedure year, not verified document issue date",
+      "current_access_confirmed": false,
+      "section_confirmed": false,
+      "cartographic_candidates": [
+        {
+          "id": "cadastre:L219_128900.135",
+          "title": "1289/135"
+        }
+      ]
+    },
+    {
+      "id": "bologna175g-2014",
+      "title": "Via Bologna 175/G",
+      "year": 2014,
+      "zone": "north",
+      "parcels": [
+        "1145/97",
+        "1145/98"
+      ],
+      "members": [
+        "2",
+        "4"
+      ],
+      "sheet": "1145",
+      "parcel": "98",
+      "identity_page": null,
+      "access_page": null,
+      "source_kind": "html",
+      "scope": "documented_property_or_group",
+      "summary_it": "La pagina riporta laboratorio 1145/98/2 e cortile 1145/98/4; per 1145/97 non riporta il subalterno.",
+      "summary_en": "The page reports workshop 1145/98/2 and courtyard 1145/98/4; no subalterno is reported for 1145/97.",
+      "access_it": "Descrive il cortile raggiungibile dal civico 175 e dal passaggio carraio 175/G. Pagina aggiornata il 1 dicembre 2014; accessi attuali non verificati.",
+      "access_en": "Describes courtyard access from civic 175 and vehicle passage 175/G. Page updated 1 December 2014; current access unverified.",
+      "facts": [
+        {
+          "sub": "2",
+          "kind": "workshop"
+        },
+        {
+          "sub": "4",
+          "kind": "courtyard"
+        }
+      ],
+      "source_url": "https://risorse.comune.torino.it/comuneaffitta/2-14-occupati/bologna-175g.shtml",
+      "source_sha256": "e434549a5b12a0af226b4e7fa7ffcc0e20a1a28a92bd1d1fb1b47a9eded7d8c0",
+      "retrieved": "2026-10-25T06:20:53.586025+00:00",
+      "date_basis": "2014 procedure; page last updated 2014-12-01",
+      "current_access_confirmed": false,
+      "section_confirmed": false,
+      "additional_references": [
+        {
+          "sheet": "1145",
+          "parcel": "97",
+          "subalterno": null
+        }
+      ],
+      "cartographic_candidates": [
+        {
+          "id": "cadastre:L219_114500.97",
+          "title": "1145/97"
+        },
+        {
+          "id": "cadastre:L219_114500.98",
+          "title": "1145/98"
+        }
+      ]
+    },
+    {
+      "id": "mongreno79-2022",
+      "title": "Strada Comunale di Mongreno 79",
+      "year": 2022,
+      "zone": "east",
+      "parcels": [
+        "1204/98"
+      ],
+      "members": [
+        "37",
+        "68"
+      ],
+      "sheet": "1204",
+      "parcel": "98",
+      "identity_page": 1,
+      "access_page": 1,
+      "source_kind": "pdf",
+      "scope": "documented_property_or_group",
+      "summary_it": "Appartamento con mansarda 1204/98/37 e autorimessa 1204/98/68: due riferimenti, non due appartamenti. Identità alle pagine 1–2.",
+      "summary_en": "Apartment with attic 1204/98/37 and garage 1204/98/68: two references, not two apartments. Identities on pages 1–2.",
+      "access_it": "Pagina 1: scala C, interno 7; scala interna per la mansarda e distinta porta dal pianerottolo comune. Nessun collegamento automatico a un ingresso attuale.",
+      "access_en": "Page 1: stair C, interior 7; internal attic stair and separate door from the common landing. No automatic link to a current entrance.",
+      "facts": [
+        {
+          "sub": "37",
+          "floor": "S1-4-5",
+          "address": "Strada Mongreno 79",
+          "cadastral_area_m2": 216,
+          "interior": "7",
+          "stair": "C"
+        },
+        {
+          "sub": "68",
+          "floor": "S1",
+          "address": "Strada Mongreno 79",
+          "cadastral_area_m2": 54,
+          "kind": "garage"
+        }
+      ],
+      "source_url": "https://bandi.comune.torino.it/sites/default/files/allegati/bandi/2022/1900/allegato_3_lotto_3_schedatecnicopatrimoniale_mongreno79_0.pdf",
+      "source_sha256": "78c91df8dc27be95cd95680f91d73fd487fb04eb3a7af8adbfc5673c2510c366",
+      "retrieved": "2026-10-25T06:21:03.500587+00:00",
+      "date_basis": "procedure year, not verified document issue date",
+      "current_access_confirmed": false,
+      "section_confirmed": false,
+      "cartographic_candidates": [
+        {
+          "id": "cadastre:L219_120400.98",
+          "title": "1204/98"
+        }
+      ]
+    },
+    {
+      "id": "castelgomberto75-2023",
+      "title": "Via Castelgomberto 75",
+      "year": 2023,
+      "zone": "south",
+      "parcels": [
+        "1387/35"
+      ],
+      "members": [
+        "173"
+      ],
+      "sheet": "1387",
+      "parcel": "35",
+      "identity_page": 2,
+      "access_page": 5,
+      "source_kind": "pdf",
+      "scope": "documented_property_or_group",
+      "summary_it": "Locali non residenziali 1387/35/173, piano T-S1. Pagina 2 dichiara aggiornamento catastale in corso: nessuna modifica completata dedotta.",
+      "summary_en": "Non-residential premises 1387/35/173, floor T-S1. Page 2 states cadastral updating in progress: no completed change inferred.",
+      "access_it": "Pagina 5: la toponomastica chiama la scala B, mentre atti e regolamento condominiale la chiamano A. Entrambe le descrizioni sono conservate.",
+      "access_en": "Page 5: municipal toponymy calls the stair B, while deeds and condominium rules call it A. Both descriptions are retained.",
+      "facts": [
+        {
+          "sub": "173",
+          "floor": "T-S1",
+          "address": "Via Castelgomberto 75",
+          "cadastral_area_m2": 925
+        }
+      ],
+      "source_url": "https://risorse.comune.torino.it/comunevende/bm~doc/7_2023_all_3_scheda_tecnico_patrimoniale_lotto_3_castelgomberto75.pdf",
+      "source_sha256": "84d04ea102949520280cdcc8ccd0558deb84710ae7a47540619950867a7f411e",
+      "retrieved": "2026-10-25T06:20:53.101012+00:00",
+      "date_basis": "procedure year, not verified document issue date",
+      "current_access_confirmed": false,
+      "section_confirmed": false,
+      "cartographic_candidates": [
+        {
+          "id": "cadastre:L219_138700.35",
+          "title": "1387/35"
+        }
+      ]
+    },
+    {
+      "id": "francia275b-2023",
+      "title": "Corso Francia 275/B",
+      "year": 2023,
+      "zone": "west",
+      "parcels": [
+        "1227/464"
+      ],
+      "members": [
+        "2"
+      ],
+      "sheet": "1227",
+      "parcel": "464",
+      "identity_page": 1,
+      "access_page": 1,
+      "source_kind": "pdf",
+      "scope": "documented_property_or_group",
+      "summary_it": "La scheda riguarda soltanto l’unità a nord, 1227/464/2; non tutto il fabbricato, descritto con due unità.",
+      "summary_en": "The sheet concerns only the northern unit, 1227/464/2; not the entire building, described as containing two units.",
+      "access_it": "Pagina 1: cancello pedonale 275B, ma indirizzo catastale 275 senza lettera. Distinte osservazioni, non un alias attuale confermato.",
+      "access_en": "Page 1: pedestrian gate 275B, but cadastral address 275 without suffix. Distinct observations, not a confirmed current alias.",
+      "facts": [
+        {
+          "sub": "2",
+          "floor": "T",
+          "address": "Corso Francia 275"
+        }
+      ],
+      "source_url": "https://risorse.comune.torino.it/comuneaffitta/bm~doc/26_2023_allegato_3_scheda_patrimoniale_lotto_3_francia275_b.pdf",
+      "source_sha256": "f35315025200be1f58b9460a16b36f9560c44b17d9902b4047721f65d6149898",
+      "retrieved": "2026-10-25T06:20:53.092137+00:00",
+      "date_basis": "procedure year, not verified document issue date",
+      "current_access_confirmed": false,
+      "section_confirmed": false,
+      "cartographic_candidates": [
+        {
+          "id": "cadastre:L219_122700.464",
+          "title": "1227/464"
+        }
+      ]
+    },
+    {
+      "id": "po18cd-2025",
+      "title": "Via Po 18/C-D",
+      "year": 2025,
+      "zone": "centre",
+      "parcels": [
+        "1280/85"
+      ],
+      "members": [
+        "21"
+      ],
+      "sheet": "1280",
+      "parcel": "85",
+      "identity_page": 2,
+      "access_page": 1,
+      "source_kind": "pdf",
+      "scope": "documented_property_or_group",
+      "summary_it": "Locale commerciale 1280/85/21. È distinto dal subalterno 6 della precedente scheda Via Po 18/I.",
+      "summary_en": "Commercial premises 1280/85/21. Distinct from subalterno 6 in the earlier Via Po 18/I sheet.",
+      "access_it": "Pagina 1: accesso dal porticato e uscita secondaria lato cortile. Pagina 2 riporta Via Po 18 interno C, piano T-1; nessun accesso attuale certificato.",
+      "access_en": "Page 1: arcade access and secondary courtyard-side exit. Page 2 reports Via Po 18 interior C, floor T-1; no current access certified.",
+      "facts": [
+        {
+          "sub": "21",
+          "floor": "T-1",
+          "address": "Via Po 18 Interno C",
+          "cadastral_area_m2": 166
+        }
+      ],
+      "source_url": "https://bandi.comune.torino.it/sites/default/files/allegati/bandi/2025/2302/allegato_2_-_lotto_2_-_scheda_tecnico-patrimoniale_-_locale_commerciale_via_po_18_c_d_sub_21.pdf",
+      "source_sha256": "068d6462055b47ccd02773b7cfcb7ccde7f24aeb4e470811d76a81ab6dcb5c94",
+      "retrieved": "2026-10-25T06:21:04.155403+00:00",
+      "date_basis": "procedure year, not verified document issue date",
+      "current_access_confirmed": false,
+      "section_confirmed": false,
+      "cartographic_candidates": [
+        {
+          "id": "cadastre:L219_128000.85",
+          "title": "1280/85"
+        }
+      ]
+    }
+  ],
+  "raw_documents_republished": false,
+  "limitation": "Selected dated factual summaries; shared sheet/parcel does not establish equivalence of section, building or entrance.",
+  "bounded_search_notes": [
+    {
+      "area": "north/south/east/west/centre",
+      "date": "2026-10-25",
+      "result": "Five additional key-bearing municipal sources selected; purposive sample, not representative coverage."
+    },
+    {
+      "query": "Vandalino / Luserna municipal property sheets",
+      "date": "2026-10-25",
+      "result": "No suitable key-bearing source selected in this bounded search; not evidence of document absence."
+    }
+  ]
+}

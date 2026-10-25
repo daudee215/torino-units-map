@@ -1,0 +1,154 @@
+{
+  "version": "2.14.0-dev.1",
+  "built": "2026-10-24T17:57:40.570115+00:00",
+  "local_only": false,
+  "counts": {
+    "parcels": 82434,
+    "civic_ids": 119145,
+    "census_sections": 4314
+  },
+  "audit": {
+    "addresses": {
+      "municipal_rows": 119145,
+      "municipal_ids": 119145,
+      "anncsu_torino_rows": 109700,
+      "anncsu_file": "INDIR_PIEM_20260915.csv",
+      "anncsu_duplicate_access_ids": 0,
+      "anncsu_rows_with_coordinates": 0,
+      "special_rows_excluded": 0,
+      "statuses": {
+        "unique_candidate": 90448,
+        "no_candidate": 28697
+      },
+      "source_rows_not_in_map_catalogue": 37,
+      "excluded_outside_boundary": 37
+    },
+    "refresh_comparison": {
+      "anncsu.zip": {
+        "bytes_identical": true
+      },
+      "civics.csv": {
+        "bytes_identical": true
+      },
+      "istat.zip": {
+        "bytes_identical": true
+      }
+    },
+    "istat": {
+      "source_rows": 4314,
+      "source_columns": 148,
+      "geometry_rows": 6916,
+      "duplicate_section_ids": 0,
+      "data_without_geometry": 0,
+      "geometry_without_data": 2602,
+      "fields": {
+        "P1": "Popolazione residente - totale",
+        "PF1": "Famiglie residenti - totale",
+        "A2": "Abitazioni occupate da almeno una persona residente",
+        "A3": "Abitazioni vuote e abitazioni occupate solo da persone non residenti",
+        "A5": "Altro tipo di alloggi occupati",
+        "A8": "Abitazioni totali"
+      },
+      "reference_year": 2023,
+      "geometry_year": 2021,
+      "per_building_allocations": false,
+      "unknown_counts": {
+        "P1": 0,
+        "PF1": 0,
+        "A2": 0,
+        "A3": 0,
+        "A5": 0,
+        "A8": 0
+      }
+    },
+    "terrain": {
+      "crs": "EPSG:32632",
+      "resolution": [
+        5.0,
+        5.0
+      ],
+      "nodata": -99.0,
+      "parcel_samples": 82434,
+      "valid_samples": 82434,
+      "min_m": 201.89999389648438,
+      "max_m": 673.5800170898438,
+      "vertical_reference_compatible": false,
+      "building_extrusions_changed": false
+    },
+    "section_joins": {
+      "one": 71350,
+      "multiple": 11081,
+      "none": 3
+    }
+  },
+  "sources": [
+    {
+      "name": "anncsu.zip",
+      "url": "https://anncsu.open.agenziaentrate.gov.it/age-inspire/opendata/anncsu/getds.php?INDIR_PIEM",
+      "final_url": "https://anncsu.open.agenziaentrate.gov.it/age-inspire/opendata/anncsu/getds.php?INDIR_PIEM",
+      "status": "acquired",
+      "bytes": 20167904,
+      "sha256": "fdf642e1af34dc6aaf535ae1c0afd8904891ca251426aef3f309dcd354c48a68",
+      "retrieved": "2026-10-24T17:41:28.910484+00:00",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "name": "civics.csv",
+      "url": "http://geoportale.comune.torino.it/geodati/civici_WGS84_EPSG4326_csv.csv",
+      "final_url": "http://geoportale.comune.torino.it/geodati/civici_WGS84_EPSG4326_csv.csv",
+      "status": "acquired",
+      "bytes": 9721244,
+      "sha256": "946ed76557350d0b1666a7ca1947e7317ec369a916894dfe7b908a76fbd03137",
+      "retrieved": "2026-10-24T17:41:28.882629+00:00",
+      "content_type": "text/csv"
+    },
+    {
+      "name": "istat.zip",
+      "url": "https://esploradati.istat.it/databrowser/DWL/PERMPOP/SUBCOM/Comuni_2023.zip",
+      "final_url": "https://esploradati.istat.it/databrowser/DWL/PERMPOP/SUBCOM/Comuni_2023.zip",
+      "status": "acquired",
+      "bytes": 33812458,
+      "sha256": "a02bf21906f23b2df1ac72a52f0d01488159942ae42c2746bf4750711e1c2eed",
+      "retrieved": "2026-10-24T17:41:39.665801+00:00",
+      "content_type": "application/x-zip-compressed"
+    },
+    {
+      "name": "dtm-capabilities.xml",
+      "url": "https://geomap.reteunitaria.piemonte.it/ws/taims/rp-01/taimsdtmwcs/wcs_ice_2009_2011_dtm?SERVICE=WCS&VERSION=1.0.0&REQUEST=GetCapabilities",
+      "final_url": "https://geomap.reteunitaria.piemonte.it/ws/taims/rp-01/taimsdtmwcs/wcs_ice_2009_2011_dtm?SERVICE=WCS&VERSION=1.0.0&REQUEST=GetCapabilities",
+      "status": "acquired",
+      "bytes": 2914,
+      "sha256": "b6c3a357f4174564ca823787131e5e4c11c83777610d0720afd6fd3b7a6c6228",
+      "retrieved": "2026-10-24T17:41:28.301328+00:00",
+      "content_type": "text/xml; charset=UTF-8"
+    },
+    {
+      "name": "cigna-decision.pdf",
+      "url": "https://www.comune.torino.it/media/7400",
+      "final_url": "https://www.comune.torino.it/media/7400",
+      "status": "acquired",
+      "bytes": 106236,
+      "sha256": "2c6127dc016fd6f3ec1f5a51690f3eab19f212967ddc3227dc2d2fc9382d81ef",
+      "retrieved": "2026-10-24T17:41:29.277607+00:00",
+      "content_type": "application/pdf"
+    },
+    {
+      "name": "anncsu-metadata.json",
+      "url": "https://www.anncsu.gov.it/.allegati/metadata_indirizzario.json",
+      "final_url": "https://www.anncsu.gov.it/.allegati/metadata_indirizzario.json",
+      "status": "acquired",
+      "bytes": 5636,
+      "sha256": "045de7385ee0d9f2a101b14d687353441d75699ae1da9e6ebd410a2787c6dcfa",
+      "retrieved": "2026-10-24T17:41:29.143938+00:00",
+      "content_type": "application/json"
+    }
+  ],
+  "limits": [
+    "Address matches are candidates, not confirmed access.",
+    "Section housing counts are not allocated to buildings or apartments.",
+    "Terrain is old context; vertical compatibility with building elevations is not established.",
+    "Source catalogue identities, geometry and joins are unchanged."
+  ],
+  "reviewed_for_publication": true,
+  "public_source_only": true
+}

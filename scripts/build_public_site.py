@@ -6,7 +6,7 @@ ROOT=Path(__file__).resolve().parents[1]
 
 def inputs():
  m=json.loads((ROOT/'release-files.json').read_text(encoding='utf8'))
- assert m['version']=='2.13.0' and m['publication_authorized'] and m['public_source_only']
+ assert m['version']=='2.15.0' and m['publication_authorized'] and m['public_source_only']
  assert len({r['path'] for r in m['files']})==len(m['files'])
  assert sum(r['bytes'] for r in m['files'])==m['bytes']<900*1024**2
  def verify(r):
@@ -29,6 +29,6 @@ def build():
   p=dest/r['path'];p.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(ROOT/r['path'],p)
  with ThreadPoolExecutor(max_workers=12) as pool:list(pool.map(copy,m['files']))
  (dest/'publication-manifest.json').write_text(json.dumps(m,indent=2)+'\n',encoding='utf8')
- print(f"Public 2.13.0: {len(m['files']):,} reviewed files / {m['bytes']:,} bytes",flush=True)
+ print(f"Public 2.15.0: {len(m['files']):,} reviewed files / {m['bytes']:,} bytes",flush=True)
 
 if __name__=='__main__':build()
