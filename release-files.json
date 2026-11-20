@@ -96,8 +96,13 @@
     },
     {
       "path": "README.md",
-      "bytes": 16609,
-      "sha256": "3eba1a4f5d9228eb8a7c910ff3207dbc47d7e9a923796cda9c76837752439d39"
+      "bytes": 2101,
+      "sha256": "3c5a6e41bb1798967d994f523a7c882508c54fac19acf7ca8317c1ccb0770f3e"
+    },
+    {
+      "path": "docs/atlas-preview.jpg",
+      "bytes": 108701,
+      "sha256": "53f7ea956548e1fcca1f1034ff53c08717b82e8bd95d803f9181877de8f58d31"
     },
     {
       "path": "RECORD_WORKSPACE_PHASE.md",
@@ -236425,5 +236430,5 @@
       "sha256": "e4449a41521a9c125de770f94862df34c8fa49269cf927e4ffa2ef07c9111324"
     }
   ],
-  "bytes": 741234013
+  "bytes": 741328206
 }
