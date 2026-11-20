@@ -41,8 +41,8 @@
     },
     {
       "path": "HANDOFF.md",
-      "bytes": 30462,
-      "sha256": "291073b9097eaeec48710a231fc16b81c724d2b0cff6d03523a431b21e58e4c0"
+      "bytes": 30352,
+      "sha256": "25b7337e060944afd05f41cb6f97dfd07f6c6b47b1b0377bf51e7aced8a5cdfc"
     },
     {
       "path": "MAP_USABILITY_PHASE.md",
@@ -236430,5 +236430,5 @@
       "sha256": "e4449a41521a9c125de770f94862df34c8fa49269cf927e4ffa2ef07c9111324"
     }
   ],
-  "bytes": 741328206
+  "bytes": 741328096
 }
